@@ -180,6 +180,19 @@
   --ring: #65A30D;
 }
 
+/* ========================================
+   VENUE / B2B OVERLAY
+   Used specifically for the Court Owner landing section
+   CTA: Yellow #facc15
+   BG: Dark Navy #0B0F19
+   ======================================== */
+.mode-venue {
+  --venue-cta: #facc15;
+  --venue-cta-text: #0B0F19;
+  --venue-bg: #0B0F19;
+  --venue-highlight: #3B82F6; /* Keep blue for trust accents */
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

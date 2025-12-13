@@ -66,8 +66,8 @@ export function Header() {
                             <Moon className="w-5 h-5" />
                         )}
                     </button>
-                    <Button asChild variant="outline" className="rounded-full px-6 border-border hover:bg-muted text-foreground bg-transparent">
-                        <Link href="/login">Ingresar</Link>
+                    <Button asChild variant="outline" className="rounded-full px-6 border-white/20 hover:bg-white/10 text-foreground bg-transparent transition-all">
+                        <Link href="/login">Acceder al panel</Link>
                     </Button>
                 </div>
 
@@ -103,7 +103,7 @@ export function Header() {
                         Contacto
                     </Link>
                     <Button asChild variant="outline" className="w-full rounded-full border-border text-foreground" onClick={closeMenu}>
-                        <Link href="/login">Ingresar</Link>
+                        <Link href="/login">Acceder al panel</Link>
                     </Button>
                 </div>
             )}
