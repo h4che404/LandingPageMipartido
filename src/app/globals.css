@@ -190,7 +190,8 @@
   --venue-cta: #facc15;
   --venue-cta-text: #0B0F19;
   --venue-bg: #0B0F19;
-  --venue-highlight: #3B82F6; /* Keep blue for trust accents */
+  --venue-highlight: #3B82F6;
+  /* Keep blue for trust accents */
 }
 
 @layer base {
