@@ -35,8 +35,8 @@ export function Hero() {
                             <button
                                 onClick={() => setMode("amistoso")}
                                 className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all ${mode === "amistoso"
-                                        ? "bg-primary text-primary-foreground shadow-sm"
-                                        : "text-muted-foreground hover:text-foreground"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground"
                                     }`}
                             >
                                 Amistoso
@@ -44,8 +44,8 @@ export function Hero() {
                             <button
                                 onClick={() => setMode("competitivo")}
                                 className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all ${mode === "competitivo"
-                                        ? "bg-secondary text-secondary-foreground shadow-sm"
-                                        : "text-muted-foreground hover:text-foreground"
+                                    ? "bg-secondary text-secondary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground"
                                     }`}
                             >
                                 Competitivo
@@ -56,14 +56,33 @@ export function Hero() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
+                            key={mode} // Re-animate on mode change
                         >
                             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-foreground leading-[1.05]">
-                                Encontrá o creá <br />
-                                partidos cerca.
+                                {mode === "amistoso" ? (
+                                    <>
+                                        Encontrá o creá <br />
+                                        partidos cerca.
+                                    </>
+                                ) : (
+                                    <>
+                                        Creá tu historia. <br />
+                                        Subí de nivel.
+                                    </>
+                                )}
                             </h1>
                             <p className="mt-6 text-lg text-muted-foreground max-w-lg leading-relaxed">
-                                Para jugadores y canchas. Sumate al acceso anticipado.
-                                <span className="text-foreground/80 block mt-1">Piloto en Mendoza — acceso anticipado.</span>
+                                {mode === "amistoso" ? (
+                                    <>
+                                        Para jugadores y canchas. Sumate al acceso anticipado.
+                                        <span className="text-foreground/80 block mt-1">Piloto en Mendoza — acceso anticipado.</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        Estadísticas, rankings y partidos competitivos. Tu carrera empieza acá.
+                                        <span className="text-foreground/80 block mt-1">Medí tu progreso, desafiá a los mejores.</span>
+                                    </>
+                                )}
                             </p>
                         </motion.div>
 

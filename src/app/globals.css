@@ -174,7 +174,10 @@
 
 /* Light + Competitivo adjustments */
 :root.mode-competitivo {
-  --primary-foreground: #0F1726;
+  --primary: #65A30D;
+  /* Darker lime for better contrast */
+  --primary-foreground: #FFFFFF;
+  --ring: #65A30D;
 }
 
 @layer base {
