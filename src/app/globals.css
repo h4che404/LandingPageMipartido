@@ -185,6 +185,7 @@
    Used specifically for the Court Owner landing section
    CTA: Yellow #facc15
    BG: Dark Navy #0B0F19
+   Acts as a local "Dark Theme" override
    ======================================== */
 .mode-venue {
   --venue-cta: #facc15;
@@ -192,6 +193,19 @@
   --venue-bg: #0B0F19;
   --venue-highlight: #3B82F6;
   /* Keep blue for trust accents */
+
+  /* Override Global Theme Tokens locally */
+  --background: #0B0F19;
+  --foreground: #FFFFFF;
+  --card: #111827;
+  /* Lighter navy for cards */
+  --card-foreground: #FFFFFF;
+  --muted: #1F2937;
+  --muted-foreground: #9CA3AF;
+  --primary: #facc15;
+  /* Yellow is primary here */
+  --primary-foreground: #0B0F19;
+  --border: #1F2937;
 }
 
 @layer base {

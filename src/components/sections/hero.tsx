@@ -57,6 +57,7 @@ export function Hero() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
                             key={mode} // Re-animate on mode change
+                            className="min-h-[180px] lg:min-h-[200px] flex flex-col justify-center"
                         >
                             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-foreground leading-[1.05]">
                                 {mode === "amistoso" ? (
