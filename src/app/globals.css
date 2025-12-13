@@ -46,10 +46,13 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+/* ========================================
+   BASE: Light Mode (Amistoso default)
+   Primary: Blue (confiable, masivo)
+   ======================================== */
 :root {
   --radius: 0.75rem;
 
-  /* Light Mode */
   --background: #F6F8FC;
   --foreground: #0F1726;
 
@@ -59,6 +62,7 @@
   --popover: #FFFFFF;
   --popover-foreground: #0F1726;
 
+  /* Amistoso Primary: Blue */
   --primary: #3B82F6;
   --primary-foreground: #FFFFFF;
 
@@ -78,6 +82,12 @@
   --input: #D7DEE9;
   --ring: #3B82F6;
 
+  /* States */
+  --success: #22C55E;
+  --warning: #FFC857;
+  --error: #FF4D4D;
+  --live: #2EE9C6;
+
   /* Charts */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -96,53 +106,75 @@
   --sidebar-ring: #3B82F6;
 }
 
+/* ========================================
+   DARK MODE OVERRIDE
+   ======================================== */
 .dark {
-  /* Dark Mode */
-  --background: #090C14;
-  --foreground: #F8FAFC;
+  --background: #0B0F14;
+  --foreground: #E7ECF6;
 
-  --card: #111827;
-  --card-foreground: #F8FAFC;
+  --card: #111826;
+  --card-foreground: #E7ECF6;
 
-  --popover: #111827;
-  --popover-foreground: #F8FAFC;
+  --popover: #111826;
+  --popover-foreground: #E7ECF6;
 
-  --primary: #FACC15;
-  /* Yellow */
-  --primary-foreground: #020617;
+  /* Amistoso Primary: Blue (same hue, adjusted for dark) */
+  --primary: #3B82F6;
+  --primary-foreground: #FFFFFF;
 
-  --secondary: #1E293B;
-  --secondary-foreground: #F8FAFC;
+  --secondary: #162033;
+  --secondary-foreground: #E7ECF6;
 
-  --muted: #1E293B;
-  --muted-foreground: #94A3B8;
+  --muted: #162033;
+  --muted-foreground: #A8B3C7;
 
-  --accent: #1E293B;
-  --accent-foreground: #F8FAFC;
+  --accent: #3B82F6;
+  --accent-foreground: #E7ECF6;
 
-  --destructive: #EF4444;
+  --destructive: #FF4D4D;
   --destructive-foreground: #FFFFFF;
 
-  --border: #1E293B;
-  --input: #1E293B;
-  --ring: #FACC15;
-
-  /* Charts */
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --border: #263248;
+  --input: #263248;
+  --ring: #3B82F6;
 
   /* Sidebar */
   --sidebar: #111826;
   --sidebar-foreground: #E7ECF6;
-  --sidebar-primary: #A6FF4D;
-  --sidebar-primary-foreground: #111826;
+  --sidebar-primary: #3B82F6;
+  --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #162033;
   --sidebar-accent-foreground: #E7ECF6;
   --sidebar-border: #263248;
+  --sidebar-ring: #3B82F6;
+}
+
+/* ========================================
+   COMPETITIVO MODE OVERRIDE (Accent only)
+   Primary: Lime #A6FF4D (acción/energía)
+   Secondary: Violet #8B5CF6 (competitivo premium)
+   ======================================== */
+.mode-competitivo {
+  --primary: #A6FF4D;
+  --primary-foreground: #111826;
+
+  --secondary: #8B5CF6;
+  --secondary-foreground: #FFFFFF;
+
+  --accent: #8B5CF6;
+  --accent-foreground: #FFFFFF;
+
+  --ring: #A6FF4D;
+
+  --sidebar-primary: #A6FF4D;
+  --sidebar-primary-foreground: #111826;
   --sidebar-ring: #A6FF4D;
+}
+
+/* Light + Competitivo adjustments */
+:root.mode-competitivo {
+  --primary-foreground: #0F1726;
 }
 
 @layer base {
