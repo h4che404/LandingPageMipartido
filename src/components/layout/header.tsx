@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Menu, Hexagon } from "lucide-react"
+import { Menu } from "lucide-react"
 import { useState } from "react"
 
 export function Header() {
@@ -17,10 +18,13 @@ export function Header() {
 
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
-                    <div className="relative flex items-center justify-center w-8 h-8">
-                        <Hexagon className="w-8 h-8 text-green-500 fill-current" />
-                        <span className="absolute text-[10px] font-bold text-black">⚽</span>
-                    </div>
+                    <Image
+                        src="/logo.png"
+                        alt="Mi Partido"
+                        width={36}
+                        height={36}
+                        className="rounded-lg"
+                    />
                     <span className="text-xl font-bold tracking-tight text-white group-hover:text-primary transition-colors">
                         MiPartido
                     </span>
@@ -28,7 +32,7 @@ export function Header() {
 
                 {/* Desktop Nav */}
                 <nav className="hidden md:flex items-center gap-8">
-                    <Link href="#benefits" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                    <Link href="/beneficios" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
                         Beneficios
                     </Link>
                     <Link href="/canchas" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
@@ -55,7 +59,7 @@ export function Header() {
             {/* Mobile Nav */}
             {mobileMenuOpen && (
                 <div className="md:hidden border-t border-white/10 bg-background px-4 py-6 shadow-2xl fixed top-20 left-0 right-0 z-40 flex flex-col gap-4">
-                    <Link href="#benefits" onClick={closeMenu} className="text-lg font-medium text-gray-300 hover:text-white">
+                    <Link href="/beneficios" onClick={closeMenu} className="text-lg font-medium text-gray-300 hover:text-white">
                         Beneficios
                     </Link>
                     <Link href="/canchas" onClick={closeMenu} className="text-lg font-medium text-gray-300 hover:text-white">

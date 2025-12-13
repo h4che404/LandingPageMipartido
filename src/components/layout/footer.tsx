@@ -25,7 +25,7 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 
 export function Footer() {
     return (
-        <footer className="bg-black/40 border-t border-white/5 py-12 mt-12">
+        <footer id="contact" className="bg-black/40 border-t border-white/5 py-12 mt-12">
             <div className="container mx-auto px-4 flex flex-col items-center text-center gap-6">
 
                 {/* Logo Round */}
