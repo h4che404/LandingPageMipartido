@@ -1,19 +1,19 @@
 import { Hero } from "@/components/sections/hero";
-import { SocialProof } from "@/components/sections/social-proof";
-import { Features } from "@/components/sections/features";
-import { OrganizerCTA } from "@/components/sections/organizer-cta";
-import { FAQ } from "@/components/sections/faq";
+import { PainPoints } from "@/components/sections/pain-points";
+import { Audience } from "@/components/sections/audience";
+import { Incentive } from "@/components/sections/incentive";
 import { WaitlistForm } from "@/components/features/waitlist-form";
+import { Footer } from "@/components/layout/footer";
 
 export default function Home() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <Hero />
-      <SocialProof />
-      <Features />
-      <OrganizerCTA />
+      <PainPoints />
+      <Audience />
       <WaitlistForm />
-      <FAQ />
+      <Incentive />
+      <Footer />
     </div>
   );
 }

@@ -1,44 +1,62 @@
+"use client"
+
 import Link from "next/link"
+import Image from "next/image"
+import { Instagram, Mail } from "lucide-react"
+
+// TikTok icon custom if needed, or use Lucide if available. 
+// Lucide doesn't have TikTok, using a simple svg or text placeholder.
+const TikTokIcon = ({ className }: { className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+    >
+        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+    </svg>
+)
 
 export function Footer() {
     return (
-        <footer className="border-t border-border bg-background py-12">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-                    <div>
-                        <span className="text-lg font-bold tracking-tight text-foreground">
-                            Mi Partido<span className="text-primary">.</span>
-                        </span>
-                        <p className="mt-2 text-sm text-muted-foreground max-w-xs">
-                            La app para organizar partidos de fútbol, pádel y tenis.
-                            Encontrá rivales, jugá torneos o simplemente divertite con amigos.
-                        </p>
-                    </div>
+        <footer className="bg-black/40 border-t border-white/5 py-12 mt-12">
+            <div className="container mx-auto px-4 flex flex-col items-center text-center gap-6">
 
-                    <div className="flex flex-col md:flex-row gap-8 md:gap-12">
-                        <div className="flex flex-col gap-3">
-                            <h4 className="text-sm font-semibold text-foreground">Producto</h4>
-                            <Link href="#features" className="text-sm text-muted-foreground hover:text-primary transition-colors">Cómo funciona</Link>
-                            <Link href="#modes" className="text-sm text-muted-foreground hover:text-primary transition-colors">Modos de juego</Link>
-                            <Link href="#organizers" className="text-sm text-muted-foreground hover:text-primary transition-colors">Para canchas</Link>
-                        </div>
-                        <div className="flex flex-col gap-3">
-                            <h4 className="text-sm font-semibold text-foreground">Legal</h4>
-                            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">Privacidad</Link>
-                            <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">Términos</Link>
-                        </div>
-                        <div className="flex flex-col gap-3">
-                            <h4 className="text-sm font-semibold text-foreground">Contacto</h4>
-                            <a href="mailto:hola@mipartido.app" className="text-sm text-muted-foreground hover:text-primary transition-colors">hola@mipartido.app</a>
-                        </div>
-                    </div>
+                {/* Logo Round */}
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/10 shadow-xl">
+                    <Image
+                        src="/logo.png"
+                        alt="Mi Partido Logo"
+                        width={64}
+                        height={64}
+                        className="object-cover w-full h-full"
+                    />
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
-                    <p>&copy; {new Date().getFullYear()} Mi Partido. Todos los derechos reservados.</p>
-                    <div className="flex gap-4">
-                        {/* Social icons could go here */}
-                    </div>
+                <div className="flex gap-6 text-muted-foreground">
+                    <Link href="https://instagram.com" target="_blank" className="hover:text-white transition-colors">
+                        <Instagram className="w-6 h-6" />
+                        <span className="sr-only">Instagram</span>
+                    </Link>
+                    <Link href="https://tiktok.com" target="_blank" className="hover:text-white transition-colors">
+                        <TikTokIcon className="w-6 h-6" />
+                        <span className="sr-only">TikTok</span>
+                    </Link>
+                    <Link href="mailto:capitanes@mipartido.app" className="hover:text-white transition-colors">
+                        <Mail className="w-6 h-6" />
+                        <span className="sr-only">Email</span>
+                    </Link>
+                </div>
+
+                <div className="text-sm text-muted-foreground/60">
+                    <p>capitanes@mipartido.app</p>
+                    <p className="mt-2">&copy; {new Date().getFullYear()} Mi Partido App. Todos los derechos reservados.</p>
                 </div>
             </div>
         </footer>

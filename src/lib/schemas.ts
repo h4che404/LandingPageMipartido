@@ -1,14 +1,10 @@
 import { z } from "zod"
 
 export const waitlistSchema = z.object({
-    contactType: z.enum(["email", "whatsapp"]),
-    contactValue: z.string().min(3, "Contacto requerido"),
-    city: z.string().min(2, "Ciudad requerida"),
-    sports: z.array(z.string()).optional(),
-    moodInterest: z.enum(["social", "competitive", "both"]).optional(),
-    consentMarketing: z.boolean().refine(val => val === true, {
-        message: "Debés aceptar para continuar"
-    }),
+    name: z.string().min(2, "Nombre requerido"),
+    city: z.string().min(2, "Ciudad / Zona requerida"),
+    sport: z.enum(["padel", "futbol", "tenis", "basket", "otro"]),
+    contact: z.string().min(5, "WhatsApp o Email requerido"),
     _hp: z.string().max(0).optional(),
 })
 
