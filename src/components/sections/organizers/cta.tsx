@@ -20,15 +20,14 @@ export function OrganizersCTA() {
                         Obtené acceso anticipado y precios preferenciales.
                     </p>
 
-                    <form className="flex flex-col gap-4 max-w-md mx-auto" action="mailto:capitanes@mipartido.app" method="get">
-                        {/* Simple mailto for now as per minimal viable iteration */}
-                        <Button size="lg" className="w-full rounded-xl text-lg h-14" type="submit">
-                            Contactar ventas
+                    <div className="flex flex-col gap-4 max-w-md mx-auto">
+                        <Button size="lg" className="w-full rounded-xl text-lg h-14" asChild>
+                            <a href="mailto:capitanes@mipartido.app">Contactar ventas</a>
                         </Button>
                         <p className="text-sm text-muted-foreground/60">
                             O escribinos a capitanes@mipartido.app
                         </p>
-                    </form>
+                    </div>
                 </motion.div>
             </div>
         </section>
