@@ -22,8 +22,8 @@ export function Header() {
 
                 {/* Desktop Nav */}
                 <nav className="hidden md:flex items-center gap-8">
-                    <Link href="#problems" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                        Problemas
+                    <Link href="/canchas" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                        Para canchas
                     </Link>
                     <Link href="#audience" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                         Para quién es
@@ -48,11 +48,11 @@ export function Header() {
                 <div className="md:hidden border-t border-border bg-background px-4 py-4 shadow-lg fixed top-16 left-0 right-0 z-40">
                     <nav className="flex flex-col space-y-4">
                         <Link
-                            href="#problems"
+                            href="/canchas"
                             className="text-sm font-medium text-muted-foreground hover:text-foreground"
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            Problemas
+                            Para canchas
                         </Link>
                         <Link
                             href="#audience"
