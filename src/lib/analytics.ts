@@ -1,7 +1,6 @@
-"use client"
 
-// Minimal Analytics Abstraction
-// In the future, replace console.log with window.gtag() or posthog.capture()
+import { analytics } from "./firebase";
+import { logEvent } from "firebase/analytics";
 
 type EventName =
     | "view_landing"
@@ -16,8 +15,7 @@ export function trackEvent(name: EventName, properties?: Record<string, any>) {
         console.log(`[Analytics] ${name}`, properties)
     }
 
-    // Example for GA4:
-    // if (typeof window !== 'undefined' && (window as any).gtag) {
-    //   (window as any).gtag('event', name, properties)
-    // }
+    if (analytics) {
+        logEvent(analytics, name, properties);
+    }
 }
