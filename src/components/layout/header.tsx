@@ -22,14 +22,11 @@ export function Header() {
 
                 {/* Desktop Nav */}
                 <nav className="hidden md:flex items-center gap-8">
-                    <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                        Cómo funciona
+                    <Link href="#problems" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                        Problemas
                     </Link>
-                    <Link href="#modes" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                        Social vs Competitivo
-                    </Link>
-                    <Link href="#organizers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                        Para canchas
+                    <Link href="#audience" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                        Para quién es
                     </Link>
                 </nav>
 
@@ -48,28 +45,21 @@ export function Header() {
 
             {/* Mobile Nav */}
             {mobileMenuOpen && (
-                <div className="md:hidden border-t border-border bg-background px-4 py-4 shadow-lg">
+                <div className="md:hidden border-t border-border bg-background px-4 py-4 shadow-lg fixed top-16 left-0 right-0 z-40">
                     <nav className="flex flex-col space-y-4">
                         <Link
-                            href="#features"
+                            href="#problems"
                             className="text-sm font-medium text-muted-foreground hover:text-foreground"
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            Cómo funciona
+                            Problemas
                         </Link>
                         <Link
-                            href="#modes"
+                            href="#audience"
                             className="text-sm font-medium text-muted-foreground hover:text-foreground"
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            Social vs Competitivo
-                        </Link>
-                        <Link
-                            href="#organizers"
-                            className="text-sm font-medium text-muted-foreground hover:text-foreground"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            Para canchas
+                            Para quién es
                         </Link>
                         <Button asChild className="w-full rounded-full" onClick={() => setMobileMenuOpen(false)}>
                             <Link href="#waitlist">Sumarme a la lista</Link>

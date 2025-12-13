@@ -13,7 +13,6 @@ export default function Home() {
       <Audience />
       <WaitlistForm />
       <Incentive />
-      <Footer />
     </div>
   );
 }

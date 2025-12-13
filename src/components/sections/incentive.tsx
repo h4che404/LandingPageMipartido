@@ -4,7 +4,7 @@ import { Medal } from "lucide-react"
 
 export function Incentive() {
     return (
-        <section className="py-12 bg-yellow-500/10 border-y border-yellow-500/20">
+        <section id="benefits" className="py-24 relative overflow-hidden">
             <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-6 text-center md:text-left">
                 <div className="w-16 h-16 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-500 shrink-0">
                     <Medal className="w-8 h-8" />

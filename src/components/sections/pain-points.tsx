@@ -23,11 +23,11 @@ const pains = [
 
 export function PainPoints() {
     return (
-        <section className="py-24 bg-card/20 relative">
+        <section id="problems" className="py-24 bg-card/20 relative">
             <div className="container mx-auto px-4">
                 <div className="text-center max-w-2xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
-                        Organizar no debería ser un trabjo extra
+                        Organizar no debería ser un trabajo extra
                     </h2>
                     <p className="text-lg text-muted-foreground">
                         Solución: Mi Partido. Confirmaciones reales. Pagos claros. Canchas al toque.
