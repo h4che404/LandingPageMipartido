@@ -6,9 +6,19 @@ import { ArrowRight, Trophy, Zap } from "lucide-react"
 import { PhoneMockup } from "@/components/ui/phone-mockup"
 import Link from "next/link"
 import { useTheme } from "@/components/theme-provider"
+import { useState } from "react"
+import { BetaJoinModal } from "@/components/features/beta-join-modal"
 
 export function Hero() {
     const { mode, setMode } = useTheme()
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [modalRole, setModalRole] = useState<"player" | "court">("player")
+
+    const openModal = (role: "player" | "court") => {
+        console.log(`cta_join_click: ${role}`)
+        setModalRole(role)
+        setIsModalOpen(true)
+    }
 
     const scrollToForm = () => {
         document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth" })
@@ -75,13 +85,13 @@ export function Hero() {
                             <p className="mt-6 text-lg text-muted-foreground max-w-lg leading-relaxed">
                                 {mode === "amistoso" ? (
                                     <>
-                                        Para jugadores y canchas. Sumate al acceso anticipado.
-                                        <span className="text-foreground/80 block mt-1">Piloto en Mendoza — acceso anticipado.</span>
+                                        Jugá más, organizá menos. La app que Mendoza estaba esperando.
+                                        <span className="text-foreground/80 block mt-1 font-medium">✨ Piloto en Mendoza — Cupos limitados.</span>
                                     </>
                                 ) : (
                                     <>
-                                        Estadísticas, rankings y partidos competitivos. Tu carrera empieza acá.
-                                        <span className="text-foreground/80 block mt-1">Medí tu progreso, desafiá a los mejores.</span>
+                                        Estadísticas, rankings y torneos. Elevá tu nivel competitivo.
+                                        <span className="text-foreground/80 block mt-1 font-medium">🏆 Formá parte de la élite amateur.</span>
                                     </>
                                 )}
                             </p>
@@ -102,7 +112,6 @@ export function Hero() {
                             ))}
                         </motion.div>
 
-                        {/* CTAs */}
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -111,22 +120,28 @@ export function Hero() {
                         >
                             <Button
                                 size="lg"
-                                onClick={scrollToForm}
+                                onClick={() => openModal("player")}
                                 className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-8 h-14 font-bold text-base shadow-[0_0_20px_rgba(var(--primary),0.2)]"
                             >
-                                Entrar como Capitán Fundador
+                                Entrar a la beta
                                 <ArrowRight className="ml-2 w-5 h-5" />
                             </Button>
 
                             <Button
                                 size="lg"
                                 variant="outline"
-                                asChild
+                                onClick={() => openModal("court")}
                                 className="border-border bg-transparent text-foreground hover:bg-card rounded-xl h-14 px-8 text-base"
                             >
-                                <Link href="/canchas">Soy Cancha / Organizador</Link>
+                                Sumar mi cancha
                             </Button>
                         </motion.div>
+
+                        <BetaJoinModal
+                            isOpen={isModalOpen}
+                            onOpenChange={setIsModalOpen}
+                            defaultRole={modalRole}
+                        />
 
                         {/* Trust Footer */}
                         <motion.div
