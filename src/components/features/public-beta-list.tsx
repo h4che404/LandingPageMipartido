@@ -16,10 +16,11 @@ interface PublicMember {
 export function PublicBetaList() {
     const [members, setMembers] = useState<PublicMember[]>([])
     const [count, setCount] = useState(0)
-    const supabase = createClient()
 
     useEffect(() => {
         async function fetchData() {
+            const supabase = createClient()
+
             // Get count
             const { count } = await supabase
                 .from("beta_members")

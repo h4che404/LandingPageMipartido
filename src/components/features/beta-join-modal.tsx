@@ -20,7 +20,6 @@ export function BetaJoinModal({ isOpen, onOpenChange, defaultRole = "player" }: 
     const [email, setEmail] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [isMagicLinkSent, setIsMagicLinkSent] = useState(false)
-    const supabase = createClient()
 
     // Update internal role state when defaultRole prop changes
     useEffect(() => {
@@ -31,6 +30,7 @@ export function BetaJoinModal({ isOpen, onOpenChange, defaultRole = "player" }: 
         console.log("login_google_start")
         setIsLoading(true)
         try {
+            const supabase = createClient()
             // Save role preference before redirecting
             window.localStorage.setItem("mp_beta_role", role)
 
@@ -54,6 +54,7 @@ export function BetaJoinModal({ isOpen, onOpenChange, defaultRole = "player" }: 
         console.log("login_magiclink_start")
         setIsLoading(true)
         try {
+            const supabase = createClient()
             window.localStorage.setItem("mp_beta_role", role)
 
             const { error } = await supabase.auth.signInWithOtp({
