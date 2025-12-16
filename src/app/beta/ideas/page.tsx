@@ -22,11 +22,16 @@ export default async function IdeasPage() {
         return redirect("/beta")
     }
 
-    // Fetch all ideas (simplified query)
+    // Fetch all ideas
     const { data: ideas } = await supabase
         .from("beta_ideas")
         .select("*")
         .order("created_at", { ascending: false })
+
+    // Fetch all beta members for author info
+    const { data: members } = await supabase
+        .from("beta_members")
+        .select("user_id, full_name, avatar_url, city")
 
     // Fetch user's votes
     const { data: userVotes } = await supabase
@@ -45,6 +50,7 @@ export default async function IdeasPage() {
             initialIdeas={ideas || []}
             initialUserVotes={userVotes || []}
             initialComments={comments || []}
+            members={members || []}
             currentUserId={user.id}
             profile={profile}
         />
