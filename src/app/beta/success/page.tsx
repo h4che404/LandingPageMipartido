@@ -3,28 +3,9 @@
 import { motion } from "framer-motion"
 import { CheckCircle2, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export default function BetaSuccessPage() {
-    const router = useRouter()
-    const [countdown, setCountdown] = useState(5)
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCountdown((prev) => {
-                if (prev <= 1) {
-                    clearInterval(timer)
-                    router.push("/")
-                    return 0
-                }
-                return prev - 1
-            })
-        }, 1000)
-
-        return () => clearInterval(timer)
-    }, [router])
-
     return (
         <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
             <motion.div
@@ -63,19 +44,12 @@ export default function BetaSuccessPage() {
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    <Button
-                        onClick={() => router.push("/")}
-                        className="w-full"
-                    >
+                <Button asChild className="w-full">
+                    <Link href="/">
                         Volver al inicio
                         <ArrowRight className="ml-2 w-4 h-4" />
-                    </Button>
-
-                    <p className="text-xs text-muted-foreground">
-                        Redirigiendo automáticamente en {countdown} segundos...
-                    </p>
-                </div>
+                    </Link>
+                </Button>
             </motion.div>
         </div>
     )
