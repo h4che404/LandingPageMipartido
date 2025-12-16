@@ -29,6 +29,7 @@ interface Comment {
     idea_id: string
     user_id: string
     content: string
+    image_url?: string | null
     created_at: string
 }
 
@@ -64,13 +65,13 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [expandedIdea, setExpandedIdea] = useState<string | null>(null)
     const [newComment, setNewComment] = useState("")
+    const [previewImage, setPreviewImage] = useState<string | null>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
-    // Helper to get author info
     const getAuthor = (userId: string) => {
         return members.find(m => m.user_id === userId) || { full_name: "Usuario", avatar_url: null, city: "Mendoza" }
     }
 
-    // Real-time subscriptions
     useEffect(() => {
         const supabase = createClient()
 
@@ -106,6 +107,15 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
         }
     }, [])
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onload = (e) => setPreviewImage(e.target?.result as string)
+            reader.readAsDataURL(file)
+        }
+    }
+
     const handleSubmit = async (formData: FormData) => {
         setIsSubmitting(true)
         formData.set("category", selectedCategory)
@@ -113,6 +123,8 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
             await createIdea(formData)
             setShowNewForm(false)
             setSelectedCategory("feature")
+            setPreviewImage(null)
+            if (fileInputRef.current) fileInputRef.current.value = ''
         } catch (error: any) {
             console.error(error)
             alert(error.message || "Error al crear la idea")
@@ -188,12 +200,15 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
             </header>
 
             <main className="container mx-auto px-4 py-8 max-w-3xl">
+                {/* New Idea Modal */}
                 {showNewForm && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-card border border-border rounded-xl p-6 w-full max-w-lg space-y-4">
+                        <div className="bg-card border border-border rounded-xl p-6 w-full max-w-lg space-y-4 max-h-[90vh] overflow-y-auto">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-xl font-bold">Compartí tu idea</h2>
-                                <button onClick={() => setShowNewForm(false)}><X className="w-5 h-5" /></button>
+                                <button onClick={() => { setShowNewForm(false); setPreviewImage(null) }}>
+                                    <X className="w-5 h-5" />
+                                </button>
                             </div>
                             <form action={handleSubmit} className="space-y-4">
                                 <div>
@@ -225,11 +240,58 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
                                         required
                                         rows={4}
                                         className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm resize-none"
-                                        placeholder="Describí tu idea..."
+                                        placeholder="Describí tu idea en detalle..."
                                     />
                                 </div>
+
+                                {/* Image Upload */}
+                                <div>
+                                    <Label>Imagen (opcional)</Label>
+                                    <input
+                                        type="file"
+                                        name="image"
+                                        ref={fileInputRef}
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                    />
+                                    {previewImage ? (
+                                        <div className="relative mt-2">
+                                            <img
+                                                src={previewImage}
+                                                alt="Preview"
+                                                className="w-full h-40 object-cover rounded-lg"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setPreviewImage(null)
+                                                    if (fileInputRef.current) fileInputRef.current.value = ''
+                                                }}
+                                                className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full hover:bg-black/80"
+                                            >
+                                                <X className="w-4 h-4 text-white" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="w-full mt-2 h-20 border-2 border-dashed border-border rounded-lg flex items-center justify-center gap-2 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                                        >
+                                            <ImageIcon className="w-5 h-5" />
+                                            <span className="text-sm">Agregar imagen o screenshot</span>
+                                        </button>
+                                    )}
+                                </div>
+
                                 <div className="flex gap-2 pt-2">
-                                    <Button type="button" variant="outline" className="flex-1" onClick={() => setShowNewForm(false)}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="flex-1"
+                                        onClick={() => { setShowNewForm(false); setPreviewImage(null) }}
+                                    >
                                         Cancelar
                                     </Button>
                                     <Button type="submit" className="flex-1" disabled={isSubmitting}>
@@ -241,12 +303,14 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
                     </div>
                 )}
 
+                {/* Empty State */}
                 {ideas.length === 0 ? (
                     <div className="text-center py-16 space-y-4">
                         <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
                             <Lightbulb className="w-8 h-8 text-primary" />
                         </div>
                         <h2 className="text-xl font-bold">Sé el primero en compartir una idea</h2>
+                        <p className="text-muted-foreground">Tus ideas nos ayudan a construir la app que necesitás.</p>
                         <Button onClick={() => setShowNewForm(true)}>
                             <Plus className="w-4 h-4 mr-2" />
                             Compartir idea
@@ -263,6 +327,7 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
                             return (
                                 <div key={idea.id} className="bg-card border border-border rounded-xl overflow-hidden">
                                     <div className="p-5">
+                                        {/* Author Header */}
                                         <div className="flex items-start gap-3 mb-3">
                                             {author.avatar_url ? (
                                                 <img src={author.avatar_url} alt={author.full_name} className="w-10 h-10 rounded-full" />
@@ -287,9 +352,21 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
                                             </div>
                                         </div>
 
+                                        {/* Content */}
                                         <h3 className="font-bold text-lg mb-2">{idea.title}</h3>
                                         <p className="text-muted-foreground text-sm whitespace-pre-wrap">{idea.description}</p>
 
+                                        {/* Image */}
+                                        {idea.image_url && (
+                                            <img
+                                                src={idea.image_url}
+                                                alt="Imagen de la idea"
+                                                className="w-full max-h-80 object-cover rounded-lg mt-4 cursor-pointer hover:opacity-90 transition-opacity"
+                                                onClick={() => window.open(idea.image_url!, '_blank')}
+                                            />
+                                        )}
+
+                                        {/* Actions */}
                                         <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border">
                                             <div className="flex items-center gap-1">
                                                 <button
@@ -318,26 +395,33 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
                                         </div>
                                     </div>
 
+                                    {/* Comments Section */}
                                     {expandedIdea === idea.id && (
                                         <div className="border-t border-border bg-muted/30 p-4 space-y-4">
                                             {ideaComments.length > 0 && (
-                                                <div className="space-y-3 max-h-60 overflow-y-auto">
+                                                <div className="space-y-3 max-h-80 overflow-y-auto">
                                                     {ideaComments.map(comment => {
                                                         const commentAuthor = getAuthor(comment.user_id)
                                                         return (
                                                             <div key={comment.id} className="flex gap-3">
                                                                 {commentAuthor.avatar_url ? (
-                                                                    <img src={commentAuthor.avatar_url} alt="" className="w-8 h-8 rounded-full" />
+                                                                    <img src={commentAuthor.avatar_url} alt="" className="w-8 h-8 rounded-full flex-shrink-0" />
                                                                 ) : (
-                                                                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">
+                                                                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold flex-shrink-0">
                                                                         {commentAuthor.full_name?.charAt(0).toUpperCase()}
                                                                     </div>
                                                                 )}
                                                                 <div className="flex-1 bg-background rounded-lg p-3">
-                                                                    <div className="flex items-center gap-2 mb-1">
-                                                                        <span className="font-medium text-sm">{commentAuthor.full_name}</span>
-                                                                    </div>
-                                                                    <p className="text-sm">{comment.content}</p>
+                                                                    <span className="font-medium text-sm">{commentAuthor.full_name}</span>
+                                                                    <p className="text-sm mt-1">{comment.content}</p>
+                                                                    {comment.image_url && (
+                                                                        <img
+                                                                            src={comment.image_url}
+                                                                            alt=""
+                                                                            className="max-h-40 rounded-lg mt-2 cursor-pointer"
+                                                                            onClick={() => window.open(comment.image_url!, '_blank')}
+                                                                        />
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         )
