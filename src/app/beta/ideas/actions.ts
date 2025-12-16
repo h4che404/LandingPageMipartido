@@ -18,8 +18,8 @@ export async function createIdea(formData: FormData) {
     let imageUrl = null
 
     // Upload image if provided
-    if (imageFile && imageFile.size > 0 && imageFile.name !== 'undefined') {
-        const fileExt = imageFile.name.split('.').pop()
+    if (imageFile && imageFile.size > 0 && imageFile.type.startsWith('image/')) {
+        const fileExt = imageFile.name.split('.').pop() || 'png'
         const fileName = `ideas/${user.id}/${Date.now()}.${fileExt}`
 
         const { error: uploadError } = await supabase.storage
