@@ -19,23 +19,35 @@ export async function createIdea(formData: FormData) {
 
     // Upload image if provided
     if (imageFile && imageFile.size > 0) {
-        const fileExt = imageFile.name.split('.').pop()
-        const fileName = `${user.id}/${Date.now()}.${fileExt}`
+        try {
+            const fileExt = imageFile.name.split('.').pop()
+            const fileName = `${user.id}/${Date.now()}.${fileExt}`
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
-            .from("ideas-images")
-            .upload(fileName, imageFile, {
-                cacheControl: '3600',
-                upsert: false
-            })
-
-        if (!uploadError && uploadData) {
-            const { data: { publicUrl } } = supabase.storage
+            const { data: uploadData, error: uploadError } = await supabase.storage
                 .from("ideas-images")
-                .getPublicUrl(fileName)
-            imageUrl = publicUrl
+                .upload(fileName, imageFile, {
+                    cacheControl: '3600',
+                    upsert: false
+                })
+
+            if (!uploadError && uploadData) {
+                const { data: { publicUrl } } = supabase.storage
+                    .from("ideas-images")
+                    .getPublicUrl(fileName)
+                imageUrl = publicUrl
+            }
+        } catch (e) {
+            console.error("Image upload error:", e)
+            // Continue without image
         }
     }
+
+    // Get user profile for author info
+    const { data: profile } = await supabase
+        .from("beta_members")
+        .select("full_name, avatar_url, city")
+        .eq("user_id", user.id)
+        .single()
 
     const { error } = await supabase.from("beta_ideas").insert({
         user_id: user.id,
@@ -45,15 +57,20 @@ export async function createIdea(formData: FormData) {
         image_url: imageUrl,
         votes: 0,
         status: "pending",
-        created_at: new Date().toISOString()
+        author_name: profile?.full_name || "Usuario",
+        author_avatar: profile?.avatar_url || null,
+        author_city: profile?.city || "Mendoza"
     })
 
-    if (error) throw error
+    if (error) {
+        console.error("Insert error:", error)
+        throw new Error(`Error creating idea: ${error.message}`)
+    }
 
     revalidatePath("/beta/ideas")
 }
 
-// Vote for an idea
+// Vote for an idea (simplified - direct update)
 export async function voteIdea(ideaId: string, action: "up" | "down") {
     const supabase = await createClient()
 
@@ -68,30 +85,36 @@ export async function voteIdea(ideaId: string, action: "up" | "down") {
         .eq("user_id", user.id)
         .single()
 
+    // Get current idea
+    const { data: idea } = await supabase
+        .from("beta_ideas")
+        .select("votes")
+        .eq("id", ideaId)
+        .single()
+
+    if (!idea) return
+
     if (existingVote) {
-        // Remove vote if clicking same action, or update if different
         if (existingVote.vote_type === action) {
+            // Remove vote
             await supabase.from("beta_idea_votes").delete().eq("id", existingVote.id)
-            // Update idea votes count
-            const increment = action === "up" ? -1 : 1
-            await supabase.rpc("increment_idea_votes", { idea_id: ideaId, amount: increment })
+            const newVotes = action === "up" ? idea.votes - 1 : idea.votes + 1
+            await supabase.from("beta_ideas").update({ votes: newVotes }).eq("id", ideaId)
         } else {
             // Change vote
             await supabase.from("beta_idea_votes").update({ vote_type: action }).eq("id", existingVote.id)
-            // Update by 2 (remove old vote effect, add new)
-            const increment = action === "up" ? 2 : -2
-            await supabase.rpc("increment_idea_votes", { idea_id: ideaId, amount: increment })
+            const newVotes = action === "up" ? idea.votes + 2 : idea.votes - 2
+            await supabase.from("beta_ideas").update({ votes: newVotes }).eq("id", ideaId)
         }
     } else {
         // New vote
         await supabase.from("beta_idea_votes").insert({
             idea_id: ideaId,
             user_id: user.id,
-            vote_type: action,
-            created_at: new Date().toISOString()
+            vote_type: action
         })
-        const increment = action === "up" ? 1 : -1
-        await supabase.rpc("increment_idea_votes", { idea_id: ideaId, amount: increment })
+        const newVotes = action === "up" ? idea.votes + 1 : idea.votes - 1
+        await supabase.from("beta_ideas").update({ votes: newVotes }).eq("id", ideaId)
     }
 
     revalidatePath("/beta/ideas")
@@ -104,11 +127,19 @@ export async function addComment(ideaId: string, content: string) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error("Not authenticated")
 
+    // Get user profile
+    const { data: profile } = await supabase
+        .from("beta_members")
+        .select("full_name, avatar_url")
+        .eq("user_id", user.id)
+        .single()
+
     const { error } = await supabase.from("beta_idea_comments").insert({
         idea_id: ideaId,
         user_id: user.id,
         content,
-        created_at: new Date().toISOString()
+        author_name: profile?.full_name || "Usuario",
+        author_avatar: profile?.avatar_url || null
     })
 
     if (error) throw error
@@ -116,23 +147,18 @@ export async function addComment(ideaId: string, content: string) {
     revalidatePath("/beta/ideas")
 }
 
-// Delete an idea (only owner or admin)
+// Delete an idea (only owner)
 export async function deleteIdea(ideaId: string) {
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error("Not authenticated")
 
-    // First delete related votes and comments
-    await supabase.from("beta_idea_votes").delete().eq("idea_id", ideaId)
-    await supabase.from("beta_idea_comments").delete().eq("idea_id", ideaId)
-
-    // Then delete the idea
     const { error } = await supabase
         .from("beta_ideas")
         .delete()
         .eq("id", ideaId)
-        .eq("user_id", user.id) // Only owner can delete
+        .eq("user_id", user.id)
 
     if (error) throw error
 

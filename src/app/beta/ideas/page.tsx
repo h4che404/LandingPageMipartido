@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import Link from "next/link"
 import { IdeasForum } from "./components"
 
 export default async function IdeasPage() {
@@ -23,13 +22,10 @@ export default async function IdeasPage() {
         return redirect("/beta")
     }
 
-    // Fetch all ideas with author info
+    // Fetch all ideas (simplified query)
     const { data: ideas } = await supabase
         .from("beta_ideas")
-        .select(`
-            *,
-            author:beta_members!user_id(full_name, avatar_url, city)
-        `)
+        .select("*")
         .order("created_at", { ascending: false })
 
     // Fetch user's votes
@@ -38,16 +34,17 @@ export default async function IdeasPage() {
         .select("idea_id, vote_type")
         .eq("user_id", user.id)
 
-    // Fetch comments count for each idea
-    const { data: commentCounts } = await supabase
+    // Fetch all comments
+    const { data: comments } = await supabase
         .from("beta_idea_comments")
-        .select("idea_id")
+        .select("*")
+        .order("created_at", { ascending: true })
 
     return (
         <IdeasForum
-            ideas={ideas || []}
-            userVotes={userVotes || []}
-            commentCounts={commentCounts || []}
+            initialIdeas={ideas || []}
+            initialUserVotes={userVotes || []}
+            initialComments={comments || []}
             currentUserId={user.id}
             profile={profile}
         />

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { createIdea, voteIdea, addComment } from "./actions"
+import { createClient } from "@/lib/supabase/client"
 
 interface Idea {
     id: string
@@ -21,17 +22,25 @@ interface Idea {
     votes: number
     status: string
     created_at: string
-    author: {
-        full_name: string
-        avatar_url: string | null
-        city: string
-    } | null
+    author_name: string
+    author_avatar: string | null
+    author_city: string
+}
+
+interface Comment {
+    id: string
+    idea_id: string
+    user_id: string
+    content: string
+    created_at: string
+    author_name: string
+    author_avatar: string | null
 }
 
 interface IdeasForumProps {
-    ideas: Idea[]
-    userVotes: { idea_id: string, vote_type: string }[]
-    commentCounts: { idea_id: string }[]
+    initialIdeas: Idea[]
+    initialUserVotes: { idea_id: string, vote_type: string }[]
+    initialComments: Comment[]
     currentUserId: string
     profile: any
 }
@@ -43,7 +52,10 @@ const categories = [
     { id: "other", label: "Otro", icon: Lightbulb, color: "text-yellow-500 bg-yellow-500/10" },
 ]
 
-export function IdeasForum({ ideas, userVotes, commentCounts, currentUserId, profile }: IdeasForumProps) {
+export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, currentUserId, profile }: IdeasForumProps) {
+    const [ideas, setIdeas] = useState<Idea[]>(initialIdeas)
+    const [comments, setComments] = useState<Comment[]>(initialComments)
+    const [userVotes, setUserVotes] = useState(initialUserVotes)
     const [showNewForm, setShowNewForm] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState("feature")
     const [previewImage, setPreviewImage] = useState<string | null>(null)
@@ -51,6 +63,44 @@ export function IdeasForum({ ideas, userVotes, commentCounts, currentUserId, pro
     const [expandedIdea, setExpandedIdea] = useState<string | null>(null)
     const [newComment, setNewComment] = useState("")
     const fileInputRef = useRef<HTMLInputElement>(null)
+
+    // Real-time subscriptions
+    useEffect(() => {
+        const supabase = createClient()
+
+        // Subscribe to ideas changes
+        const ideasChannel = supabase
+            .channel('ideas-realtime')
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'beta_ideas' },
+                (payload) => {
+                    if (payload.eventType === 'INSERT') {
+                        setIdeas(prev => [payload.new as Idea, ...prev])
+                    } else if (payload.eventType === 'UPDATE') {
+                        setIdeas(prev => prev.map(i => i.id === payload.new.id ? payload.new as Idea : i))
+                    } else if (payload.eventType === 'DELETE') {
+                        setIdeas(prev => prev.filter(i => i.id !== payload.old.id))
+                    }
+                }
+            )
+            .subscribe()
+
+        // Subscribe to comments changes
+        const commentsChannel = supabase
+            .channel('comments-realtime')
+            .on('postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'beta_idea_comments' },
+                (payload) => {
+                    setComments(prev => [...prev, payload.new as Comment])
+                }
+            )
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(ideasChannel)
+            supabase.removeChannel(commentsChannel)
+        }
+    }, [])
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -69,37 +119,68 @@ export function IdeasForum({ ideas, userVotes, commentCounts, currentUserId, pro
             setShowNewForm(false)
             setPreviewImage(null)
             setSelectedCategory("feature")
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
-            alert("Error al crear la idea")
+            alert(error.message || "Error al crear la idea")
         }
         setIsSubmitting(false)
     }
 
     const handleVote = async (ideaId: string, action: "up" | "down") => {
+        // Optimistic update
+        const currentVote = userVotes.find(v => v.idea_id === ideaId)?.vote_type
+
+        setIdeas(prev => prev.map(idea => {
+            if (idea.id !== ideaId) return idea
+            let newVotes = idea.votes
+            if (currentVote === action) {
+                newVotes = action === "up" ? idea.votes - 1 : idea.votes + 1
+            } else if (currentVote) {
+                newVotes = action === "up" ? idea.votes + 2 : idea.votes - 2
+            } else {
+                newVotes = action === "up" ? idea.votes + 1 : idea.votes - 1
+            }
+            return { ...idea, votes: newVotes }
+        }))
+
+        // Update local votes
+        if (currentVote === action) {
+            setUserVotes(prev => prev.filter(v => v.idea_id !== ideaId))
+        } else {
+            setUserVotes(prev => {
+                const filtered = prev.filter(v => v.idea_id !== ideaId)
+                return [...filtered, { idea_id: ideaId, vote_type: action }]
+            })
+        }
+
         try {
             await voteIdea(ideaId, action)
         } catch (error) {
             console.error(error)
+            // Revert on error - real-time will fix it
         }
     }
 
     const handleComment = async (ideaId: string) => {
         if (!newComment.trim()) return
+
+        const commentText = newComment
+        setNewComment("")
+
         try {
-            await addComment(ideaId, newComment)
-            setNewComment("")
+            await addComment(ideaId, commentText)
         } catch (error) {
             console.error(error)
+            setNewComment(commentText) // Restore on error
         }
+    }
+
+    const getIdeaComments = (ideaId: string) => {
+        return comments.filter(c => c.idea_id === ideaId)
     }
 
     const getUserVote = (ideaId: string) => {
         return userVotes.find(v => v.idea_id === ideaId)?.vote_type
-    }
-
-    const getCommentCount = (ideaId: string) => {
-        return commentCounts.filter(c => c.idea_id === ideaId).length
     }
 
     return (
@@ -113,7 +194,7 @@ export function IdeasForum({ ideas, userVotes, commentCounts, currentUserId, pro
                         </Link>
                         <div>
                             <h1 className="text-xl font-bold">Ideas & Feedback</h1>
-                            <p className="text-xs text-muted-foreground">Ayudanos a construir Mi Partido</p>
+                            <p className="text-xs text-muted-foreground">💬 Chat en tiempo real</p>
                         </div>
                     </div>
                     <Button onClick={() => setShowNewForm(true)}>
@@ -124,7 +205,7 @@ export function IdeasForum({ ideas, userVotes, commentCounts, currentUserId, pro
             </header>
 
             <main className="container mx-auto px-4 py-8 max-w-3xl">
-                {/* New Idea Form */}
+                {/* New Idea Form Modal */}
                 {showNewForm && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                         <div className="bg-card border border-border rounded-xl p-6 w-full max-w-lg space-y-4 max-h-[90vh] overflow-y-auto">
@@ -252,7 +333,7 @@ export function IdeasForum({ ideas, userVotes, commentCounts, currentUserId, pro
                     <div className="space-y-4">
                         {ideas.map(idea => {
                             const userVote = getUserVote(idea.id)
-                            const commentCount = getCommentCount(idea.id)
+                            const ideaComments = getIdeaComments(idea.id)
                             const category = categories.find(c => c.id === idea.category) || categories[3]
 
                             return (
@@ -260,21 +341,21 @@ export function IdeasForum({ ideas, userVotes, commentCounts, currentUserId, pro
                                     <div className="p-5">
                                         {/* Header */}
                                         <div className="flex items-start gap-3 mb-3">
-                                            {idea.author?.avatar_url ? (
+                                            {idea.author_avatar ? (
                                                 <img
-                                                    src={idea.author.avatar_url}
-                                                    alt={idea.author.full_name}
+                                                    src={idea.author_avatar}
+                                                    alt={idea.author_name}
                                                     className="w-10 h-10 rounded-full"
                                                 />
                                             ) : (
                                                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                                                    {idea.author?.full_name?.charAt(0).toUpperCase()}
+                                                    {idea.author_name?.charAt(0).toUpperCase()}
                                                 </div>
                                             )}
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-medium">{idea.author?.full_name}</span>
-                                                    <span className="text-xs text-muted-foreground">• {idea.author?.city}</span>
+                                                    <span className="font-medium">{idea.author_name}</span>
+                                                    <span className="text-xs text-muted-foreground">• {idea.author_city}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <span className={`text-xs px-2 py-0.5 rounded-full ${category.color}`}>
@@ -289,7 +370,7 @@ export function IdeasForum({ ideas, userVotes, commentCounts, currentUserId, pro
 
                                         {/* Content */}
                                         <h3 className="font-bold text-lg mb-2">{idea.title}</h3>
-                                        <p className="text-muted-foreground text-sm leading-relaxed">{idea.description}</p>
+                                        <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap">{idea.description}</p>
 
                                         {/* Image */}
                                         {idea.image_url && (
@@ -332,28 +413,62 @@ export function IdeasForum({ ideas, userVotes, commentCounts, currentUserId, pro
                                                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                                             >
                                                 <MessageSquare className="w-4 h-4" />
-                                                {commentCount} comentarios
+                                                {ideaComments.length} comentarios
                                             </button>
                                         </div>
                                     </div>
 
                                     {/* Comments Section */}
                                     {expandedIdea === idea.id && (
-                                        <div className="border-t border-border bg-muted/30 p-4 space-y-3">
+                                        <div className="border-t border-border bg-muted/30 p-4 space-y-4">
+                                            {/* Comments list */}
+                                            {ideaComments.length > 0 && (
+                                                <div className="space-y-3 max-h-60 overflow-y-auto">
+                                                    {ideaComments.map(comment => (
+                                                        <div key={comment.id} className="flex gap-3">
+                                                            {comment.author_avatar ? (
+                                                                <img
+                                                                    src={comment.author_avatar}
+                                                                    alt={comment.author_name}
+                                                                    className="w-8 h-8 rounded-full"
+                                                                />
+                                                            ) : (
+                                                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">
+                                                                    {comment.author_name?.charAt(0).toUpperCase()}
+                                                                </div>
+                                                            )}
+                                                            <div className="flex-1 bg-background rounded-lg p-3">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="font-medium text-sm">{comment.author_name}</span>
+                                                                    <span className="text-xs text-muted-foreground">
+                                                                        {new Date(comment.created_at).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
+                                                                    </span>
+                                                                </div>
+                                                                <p className="text-sm">{comment.content}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {/* New comment input */}
                                             <div className="flex gap-2">
                                                 <Input
                                                     value={newComment}
                                                     onChange={(e) => setNewComment(e.target.value)}
                                                     placeholder="Escribí un comentario..."
                                                     className="flex-1"
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                                            e.preventDefault()
+                                                            handleComment(idea.id)
+                                                        }
+                                                    }}
                                                 />
                                                 <Button size="sm" onClick={() => handleComment(idea.id)}>
                                                     <Send className="w-4 h-4" />
                                                 </Button>
                                             </div>
-                                            <p className="text-xs text-muted-foreground text-center">
-                                                Los comentarios aparecerán aquí (próximamente)
-                                            </p>
                                         </div>
                                     )}
                                 </div>
