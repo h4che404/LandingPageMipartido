@@ -10,6 +10,7 @@ interface PublicMember {
     city: string
     sport: string
     role: string
+    avatar_url: string | null
     created_at: string
 }
 
@@ -21,9 +22,9 @@ export function PublicBetaList() {
         async function fetchData() {
             const supabase = createClient()
 
-            // Get count
+            // Get count of users who allow public display
             const { count } = await supabase
-                .from("beta_members")
+                .from("public_beta_members")
                 .select("*", { count: "exact", head: true })
 
             if (count !== null) setCount(count)
@@ -41,6 +42,10 @@ export function PublicBetaList() {
         fetchData()
     }, [])
 
+    if (count === 0 && members.length === 0) {
+        return null // Don't show section if no public members
+    }
+
     return (
         <section className="py-20 border-t border-border bg-background">
             <div className="container px-4 mx-auto">
@@ -49,7 +54,7 @@ export function PublicBetaList() {
                         Gente esperando en Mendoza
                     </h2>
                     <p className="text-muted-foreground text-lg">
-                        Ya somos <span className="text-primary font-bold">{count > 0 ? count + 428 : "428"}</span> jugares y canchas.
+                        Ya somos <span className="text-primary font-bold">{count}</span> jugadores y canchas en la beta.
                     </p>
                 </div>
 
@@ -57,6 +62,7 @@ export function PublicBetaList() {
                     {members.map((member, i) => (
                         <div key={i} className="flex items-center space-x-4 p-4 rounded-xl border border-border bg-card">
                             <Avatar>
+                                <AvatarImage src={member.avatar_url || undefined} alt={member.display_name} />
                                 <AvatarFallback className="bg-primary/10 text-primary">
                                     {member.display_name.charAt(0).toUpperCase()}
                                 </AvatarFallback>
@@ -74,15 +80,9 @@ export function PublicBetaList() {
                             </Badge>
                         </div>
                     ))}
-
-                    {/* Empty state or placeholders if few members */}
-                    {members.length === 0 && (
-                        <div className="col-span-full text-center text-muted-foreground py-8">
-                            Sé el primero en aparecer acá.
-                        </div>
-                    )}
                 </div>
             </div>
         </section>
     )
 }
+
