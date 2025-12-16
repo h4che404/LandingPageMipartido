@@ -6,7 +6,7 @@ import Link from "next/link"
 
 // Lista de emails con acceso de administrador
 const ADMIN_EMAILS = [
-    "juancruzeliasmartin@gmail.com",
+    "eliasjuancruz54@gmail.com",
     // Agregar más emails de admins aquí
 ]
 
@@ -168,8 +168,8 @@ export default async function AdminPage() {
                                             <td className="p-4 text-sm">{member.sport}</td>
                                             <td className="p-4">
                                                 <span className={`text-xs px-2 py-1 rounded-full font-medium ${member.role === 'court'
-                                                        ? 'bg-yellow-500/10 text-yellow-600'
-                                                        : 'bg-blue-500/10 text-blue-600'
+                                                    ? 'bg-yellow-500/10 text-yellow-600'
+                                                    : 'bg-blue-500/10 text-blue-600'
                                                     }`}>
                                                     {member.role === 'court' ? 'Cancha' : 'Jugador'}
                                                 </span>
