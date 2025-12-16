@@ -4,13 +4,9 @@ import { cookies } from 'next/headers'
 export async function createClient() {
     const cookieStore = await cookies()
 
-    // Fallback for build time if envs are missing
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder'
-
     return createServerClient(
-        url,
-        key,
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookies: {
                 get(name: string) {
