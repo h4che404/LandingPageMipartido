@@ -186,6 +186,26 @@ function PlayerPortal({ profile, userName }: { profile: any, userName: string })
                 </div>
             </div>
 
+            {/* Ideas Forum CTA */}
+            <Link href="/beta/ideas" className="block">
+                <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-xl p-6 hover:from-purple-500/20 hover:to-blue-500/20 transition-all group">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
+                                <MessageSquare className="w-6 h-6 text-purple-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-lg group-hover:text-purple-400 transition-colors">Ideas & Feedback</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Compartí tus ideas para la app. Votá las mejores propuestas.
+                                </p>
+                            </div>
+                        </div>
+                        <span className="text-purple-500 font-bold">→</span>
+                    </div>
+                </div>
+            </Link>
+
             {/* Coming Features */}
             <div className="space-y-4">
                 <h2 className="text-xl font-bold">Lo que viene</h2>
@@ -286,8 +306,8 @@ function CourtDashboard({ profile }: { profile: any }) {
                             <div key={hour} className="flex items-center gap-4">
                                 <span className="text-sm text-muted-foreground w-16">{hour}</span>
                                 <div className={`flex-1 h-10 rounded-lg ${i === 1 || i === 3 || i === 5
-                                        ? 'bg-green-500/20 border border-green-500/30'
-                                        : 'bg-muted/50 border border-border'
+                                    ? 'bg-green-500/20 border border-green-500/30'
+                                    : 'bg-muted/50 border border-border'
                                     } flex items-center px-3`}>
                                     {(i === 1 || i === 3 || i === 5) && (
                                         <span className="text-sm font-medium text-green-600">
