@@ -1,28 +1,33 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { LayoutDashboard, CalendarRange, Users, BarChart3 } from "lucide-react"
+import { CalendarDays, BellRing, ListChecks, Zap } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 const features = [
     {
-        icon: LayoutDashboard,
-        title: "Dashboard en Tiempo Real",
-        desc: "Visualizá el estado de todas tus canchas en una sola pantalla. Ocupación actual, próximas reservas y huecos disponibles."
+        icon: CalendarDays,
+        title: "Calendario de turnos simple",
+        desc: "Visualizá tu semana de un vistazo. Agendá turnos en segundos, sin complicaciones.",
+        available: true,
     },
     {
-        icon: CalendarRange,
-        title: "Gestión de Turnos",
-        desc: "Calendario intuitivo drag-and-drop. Agendá, mové o cancelá turnos en segundos. Sincronizado para evitar doble reserva."
+        icon: BellRing,
+        title: "Confirmaciones y recordatorios",
+        desc: "Cada jugador recibe recordatorio automático. Menos plantones, más certeza.",
+        available: true,
     },
     {
-        icon: BarChart3,
-        title: "Métricas de Ingresos",
-        desc: "Reportes detallados de facturación diaria, semanal y mensual. Sabé exactamente cuánto entra y por qué concepto."
+        icon: ListChecks,
+        title: "Lista de espera para huecos",
+        desc: "¿Se liberó un horario? Avisamos automáticamente a quien esté esperando.",
+        available: true,
     },
     {
-        icon: Users,
-        title: "Historial de Jugadores",
-        desc: "Base de datos de tus clientes. Identificá a los más fieles, bloqueá a los que te fallan y personalizá la atención."
+        icon: Zap,
+        title: "Promos último minuto",
+        desc: "Llenate los huecos con ofertas flash cuando tengas cancelaciones.",
+        available: false,
     }
 ]
 
@@ -31,8 +36,8 @@ export function OrganizersFeatures() {
         <section className="py-24 bg-card/10">
             <div className="container mx-auto px-4">
                 <div className="max-w-2xl mx-auto text-center mb-16">
-                    <h2 className="text-3xl font-bold mb-4">Todo lo que necesitás para operar</h2>
-                    <p className="text-muted-foreground">Una suite completa de herramientas administrativas, sin la complejidad.</p>
+                    <h2 className="text-3xl font-bold mb-4">Menos WhatsApp, más orden</h2>
+                    <p className="text-muted-foreground">Herramientas simples para llenar tus canchas y reducir plantones.</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -43,9 +48,14 @@ export function OrganizersFeatures() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
                             viewport={{ once: true }}
-                            className="bg-card border border-border/50 p-6 rounded-2xl hover:border-primary/20 transition-colors"
+                            className="relative bg-card border border-border/50 p-6 rounded-2xl hover:border-primary/20 transition-colors"
                         >
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6">
+                            {!f.available && (
+                                <Badge variant="secondary" className="absolute top-3 right-3 text-[10px] bg-yellow-500/20 text-yellow-600 border-yellow-500/30">
+                                    Próximamente
+                                </Badge>
+                            )}
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${f.available ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                                 <f.icon className="w-6 h-6" />
                             </div>
                             <h3 className="font-bold text-lg mb-3">{f.title}</h3>
@@ -59,3 +69,4 @@ export function OrganizersFeatures() {
         </section>
     )
 }
+

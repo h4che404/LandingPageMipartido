@@ -119,7 +119,7 @@ export function Hero() {
                                 {mode === "amistoso" ? (
                                     <>
                                         Jugá más, organizá menos. La app que Mendoza estaba esperando.
-                                        <span className="text-foreground/80 block mt-1 font-medium">✨ Piloto en Mendoza — Cupos limitados.</span>
+                                        <span className="text-foreground/80 block mt-1 font-medium">✨ Piloto Zona Este — San Martín, Junín, Rivadavia.</span>
                                     </>
                                 ) : (
                                     <>

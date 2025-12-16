@@ -1,4 +1,5 @@
 import { Hero } from "@/components/sections/hero";
+import { ForCourts } from "@/components/sections/for-courts";
 import { Benefits } from "@/components/sections/benefits";
 import { PainPoints } from "@/components/sections/pain-points";
 import { Audience } from "@/components/sections/audience";
@@ -10,6 +11,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Hero />
+      <ForCourts />
       <Benefits />
       <PainPoints />
       <Audience />
@@ -18,4 +20,5 @@ export default function Home() {
     </div>
   );
 }
+
 

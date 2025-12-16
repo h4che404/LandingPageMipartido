@@ -8,7 +8,7 @@ export default function LoginPage() {
             <div className="text-center space-y-6 max-w-sm">
                 <h1 className="text-2xl font-bold">Proximamente</h1>
                 <p className="text-muted-foreground">
-                    El panel de gestión estará disponible muy pronto para los Capitanes Fundadores.
+                    El panel de gestión estará disponible muy pronto para los Usuarios Fundadores.
                 </p>
                 <Button asChild>
                     <Link href="/">
