@@ -2,7 +2,6 @@ import { Hero } from "@/components/sections/hero";
 import { Benefits } from "@/components/sections/benefits";
 import { PainPoints } from "@/components/sections/pain-points";
 import { Audience } from "@/components/sections/audience";
-import { Incentive } from "@/components/sections/incentive";
 import { WaitlistForm } from "@/components/features/waitlist-form";
 import { Footer } from "@/components/layout/footer";
 import { PublicBetaList } from "@/components/features/public-beta-list";
@@ -15,8 +14,8 @@ export default function Home() {
       <PainPoints />
       <Audience />
       <WaitlistForm />
-      <Incentive />
       <PublicBetaList />
     </div>
   );
 }
+
