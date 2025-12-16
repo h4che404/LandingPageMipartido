@@ -44,6 +44,7 @@ export async function createIdea(formData: FormData) {
         title,
         description,
         category,
+        image_url: imageUrl,
         votes: 0,
         status: "pending"
     })
