@@ -48,6 +48,6 @@ export async function upsertBetaProfile(formData: FormData) {
     revalidatePath("/beta")
     revalidatePath("/") // Revalidate landing to show new public member
 
-    // Redirect to success page
-    redirect("/beta/success")
+    // Redirect back to portal (now showing the dashboard)
+    redirect("/beta")
 }
