@@ -6,13 +6,46 @@ import { ArrowRight, Trophy, Zap } from "lucide-react"
 import { PhoneMockup } from "@/components/ui/phone-mockup"
 import Link from "next/link"
 import { useTheme } from "@/components/theme-provider"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { BetaJoinModal } from "@/components/features/beta-join-modal"
+import { createClient } from "@/lib/supabase/client"
+
+interface BetaMember {
+    avatar_url: string | null
+    display_name: string
+}
 
 export function Hero() {
     const { mode, setMode } = useTheme()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalRole, setModalRole] = useState<"player" | "court">("player")
+    const [betaMembers, setBetaMembers] = useState<BetaMember[]>([])
+    const [betaCount, setBetaCount] = useState(0)
+
+    useEffect(() => {
+        async function fetchBetaMembers() {
+            const supabase = createClient()
+
+            // Get count
+            const { count } = await supabase
+                .from("public_beta_members")
+                .select("*", { count: "exact", head: true })
+
+            if (count !== null) setBetaCount(count)
+
+            // Get first 5 members with avatars
+            const { data } = await supabase
+                .from("public_beta_members")
+                .select("avatar_url, display_name")
+                .not("avatar_url", "is", null)
+                .order("created_at", { ascending: false })
+                .limit(5)
+
+            if (data) setBetaMembers(data)
+        }
+
+        fetchBetaMembers()
+    }, [])
 
     const openModal = (role: "player" | "court") => {
         console.log(`cta_join_click: ${role}`)
@@ -157,14 +190,32 @@ export function Hero() {
 
                             <div className="flex items-center gap-4">
                                 <div className="flex -space-x-3">
-                                    {[1, 2, 3].map(i => (
-                                        <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-muted overflow-hidden">
-                                            <div className="w-full h-full bg-gradient-to-br from-muted-foreground/30 to-muted-foreground/50" />
-                                        </div>
-                                    ))}
+                                    {betaMembers.length > 0 ? (
+                                        betaMembers.slice(0, 5).map((member, i) => (
+                                            <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-muted overflow-hidden">
+                                                {member.avatar_url ? (
+                                                    <img
+                                                        src={member.avatar_url}
+                                                        alt={member.display_name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full bg-gradient-to-br from-primary/30 to-primary/50 flex items-center justify-center text-xs font-bold text-primary-foreground">
+                                                        {member.display_name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        [1, 2, 3].map(i => (
+                                            <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-muted overflow-hidden">
+                                                <div className="w-full h-full bg-gradient-to-br from-muted-foreground/30 to-muted-foreground/50" />
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                                 <div className="text-sm text-muted-foreground">
-                                    <strong className="text-foreground">+428</strong> jugadores en espera
+                                    <strong className="text-foreground">+{betaCount > 0 ? betaCount : 428}</strong> jugadores en espera
                                 </div>
                             </div>
 
