@@ -13,14 +13,17 @@ export async function createIdea(formData: FormData) {
     const title = formData.get("title") as string
     const description = formData.get("description") as string
     const category = formData.get("category") as string
-    const imageUrl = formData.get("imageUrl") as string | null
+    const imageUrlRaw = formData.get("imageUrl") as string
+    const imageUrl = imageUrlRaw && imageUrlRaw.length > 0 ? imageUrlRaw : null
+
+    console.log("Creating idea with imageUrl:", imageUrl) // Debug log
 
     const { error } = await supabase.from("beta_ideas").insert({
         user_id: user.id,
         title,
         description,
         category,
-        image_url: imageUrl || null,
+        image_url: imageUrl,
         votes: 0,
         status: "pending"
     })
