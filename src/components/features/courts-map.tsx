@@ -85,7 +85,7 @@ export function CourtsMap({ courts, selectedCourtId, hoveredCourtId }: CourtsMap
         }
     }, [mapboxToken]) // Only depend on token for init
 
-    // Handle Markers
+    // Handle Markers & Initial Bounds
     useEffect(() => {
         if (!map.current || !courts.length) return
 
@@ -93,8 +93,12 @@ export function CourtsMap({ courts, selectedCourtId, hoveredCourtId }: CourtsMap
         Object.values(markersRef.current).forEach(marker => marker.remove())
         markersRef.current = {}
 
+        const bounds = new mapboxgl.LngLatBounds()
+        let hasValidCoords = false
+
         courts.forEach(court => {
             if (!court.court_lat || !court.court_lng) return
+            hasValidCoords = true
 
             // Custom Marker Element
             const el = document.createElement('div')
@@ -113,27 +117,43 @@ export function CourtsMap({ courts, selectedCourtId, hoveredCourtId }: CourtsMap
                 </div>
             `
 
-            el.addEventListener('click', () => {
-                // Could callback vertically if needed, but for now map is driven by props or self-interaction
-            })
+            /* 
+               IMPORTANT: We rely on the parent component to pass selectedCourtId via prop.
+               However, to make the marker clickable directly on the map, we can trigger an event?
+               Actually the user didn't ask for click-to-select, but click-list-to-fly. 
+               BUT "click en la cancha desde afuera del mapa se seleccione en el mapa automatically". 
+               Wait, "click en la cancha desde afuera" means click the LIST item.
+               So mapped logic is fine.
+            */
 
             const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
                 .setLngLat([court.court_lng, court.court_lat])
                 .addTo(map.current!)
 
             markersRef.current[court.user_id] = marker
+            bounds.extend([court.court_lng, court.court_lat])
         })
 
-        // Fit bounds if no selection initially
-        if (!selectedCourtId && courts.length > 1) {
-            const bounds = new mapboxgl.LngLatBounds()
-            courts.forEach(c => {
-                if (c.court_lat && c.court_lng) bounds.extend([c.court_lng, c.court_lat])
-            })
-            map.current.fitBounds(bounds, { padding: 100, maxZoom: 15 })
+        // Fit bounds logic:
+        // Only fit bounds if we are NOT currently selecting a specific court (to avoid overriding flyTo)
+        // OR if this is the initial load.
+        if (hasValidCoords && !selectedCourtId) {
+            if (courts.length === 1) {
+                // Single court: Fly to it directly with good zoom
+                const c = courts[0]
+                map.current.flyTo({
+                    center: [c.court_lng, c.court_lat],
+                    zoom: 16,
+                    pitch: 60,
+                    bearing: -17.6
+                })
+            } else {
+                // Multiple courts: Fit bounds
+                map.current.fitBounds(bounds, { padding: 100, maxZoom: 15, pitch: 45 })
+            }
         }
 
-    }, [courts, selectedCourtId])
+    }, [courts]) // Removed selectedCourtId dependency to prevent reset loops
 
     // Handle Selection FlyTo
     useEffect(() => {
