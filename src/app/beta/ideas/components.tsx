@@ -6,10 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
     ArrowLeft, Plus, ThumbsUp, ThumbsDown, MessageSquare,
-    Image as ImageIcon, X, Send, Lightbulb, Sparkles, Bug, Zap
+    Image as ImageIcon, X, Send, Lightbulb, Sparkles, Bug, Zap, Trash2
 } from "lucide-react"
 import Link from "next/link"
-import { createIdea, voteIdea, addComment } from "./actions"
+import { createIdea, voteIdea, addComment, deleteIdea } from "./actions"
 import { createClient } from "@/lib/supabase/client"
 
 interface Idea {
@@ -380,6 +380,26 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
                                                     </span>
                                                 </div>
                                             </div>
+                                            {/* Delete button for owner */}
+                                            {idea.user_id === currentUserId && (
+                                                <button
+                                                    onClick={async () => {
+                                                        if (confirm("¿Estás seguro que querés eliminar esta idea?")) {
+                                                            try {
+                                                                await deleteIdea(idea.id)
+                                                                setIdeas(prev => prev.filter(i => i.id !== idea.id))
+                                                            } catch (e) {
+                                                                console.error(e)
+                                                                alert("Error al eliminar")
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="p-2 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                                                    title="Eliminar idea"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            )}
                                         </div>
 
                                         {/* Content */}
