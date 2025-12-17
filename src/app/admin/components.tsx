@@ -131,10 +131,13 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
 
         setIsLoading(true)
         try {
-            await updateCourtStatus(userId, status)
+            const result = await updateCourtStatus(userId, status)
+            if (!result.success) {
+                alert(`Error: ${result.error}`)
+            }
         } catch (error) {
             console.error("Error updating court status:", error)
-            alert("Error al actualizar estado")
+            alert("Error inesperado al actualizar estado")
         }
         setIsLoading(false)
     }

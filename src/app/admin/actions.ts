@@ -144,23 +144,35 @@ export async function changeRole(userId: string, newRole: string) {
 }
 
 // Admin action to approve/reject courts
+// Admin action to approve/reject courts
 export async function updateCourtStatus(userId: string, status: "approved" | "rejected", notes?: string) {
-    const supabase = await createClient()
+    try {
+        const supabase = createAdminClient()
 
-    const { error } = await supabase
-        .from("beta_members")
-        .update({
-            court_status: status,
-            admin_notes: notes || null,
-            updated_at: new Date().toISOString()
-        })
-        .eq("user_id", userId)
+        const { error } = await supabase
+            .from("beta_members")
+            .update({
+                court_status: status,
+                admin_notes: notes || null,
+                updated_at: new Date().toISOString()
+            })
+            .eq("user_id", userId)
 
-    if (error) {
-        console.error("Error updating court status:", error)
-        throw new Error("Failed to update status")
+        if (error) {
+            console.error("Error updating court status:", error)
+            return { success: false, error: error.message }
+        }
+
+        revalidatePath("/admin")
+        revalidatePath("/beta")
+        return { success: true }
+    } catch (error: any) {
+        console.error("Admin client error:", error)
+        return {
+            success: false,
+            error: error.message.includes("SUPABASE_SERVICE_ROLE_KEY")
+                ? "Falta la Service Role Key en las variables de entorno."
+                : "Error al actualizar estado"
+        }
     }
-
-    revalidatePath("/admin")
-    revalidatePath("/beta")
 }
