@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
-import { Search, MapPin, Loader2, Check } from "lucide-react"
+import { Search, MapPin, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -26,14 +26,19 @@ const COLORS = {
 export function CourtLocationManager({ onConfirm, initialLat = -32.89084, initialLng = -68.82717 }: CourtLocationManagerProps) {
     const mapContainer = useRef<HTMLDivElement>(null)
     const map = useRef<mapboxgl.Map | null>(null)
+    const markerRef = useRef<mapboxgl.Marker | null>(null)
+
     const [isLoading, setIsLoading] = useState(true)
     const [address, setAddress] = useState("Ubicando...")
     const [isConfirmed, setIsConfirmed] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const [isSearching, setIsSearching] = useState(false)
 
+    // Ref to track state inside event listeners
+    const isConfirmedRef = useRef(isConfirmed)
+    useEffect(() => { isConfirmedRef.current = isConfirmed }, [isConfirmed])
+
     // Ensure Mapbox token is set
-    // Note: You must add NEXT_PUBLIC_MAPBOX_TOKEN to your .env.local
     const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
     useEffect(() => {
@@ -52,8 +57,9 @@ export function CourtLocationManager({ onConfirm, initialLat = -32.89084, initia
             container: mapContainer.current,
             style: "mapbox://styles/mapbox/dark-v11",
             center: [initialLng, initialLat],
-            zoom: 15,
-            pitch: 45, // 3D feel
+            zoom: 15.5,
+            pitch: 60, // 3D feel
+            bearing: -17.6, // Slight rotation for depth
             attributionControl: false
         })
 
@@ -62,22 +68,61 @@ export function CourtLocationManager({ onConfirm, initialLat = -32.89084, initia
         m.on("load", () => {
             setIsLoading(false)
             updateAddress(initialLat, initialLng)
+
+            // Add 3D buildings
+            const layers = m.getStyle().layers
+            const labelLayerId = layers?.find(
+                (layer) => layer.type === 'symbol' && layer.layout?.['text-field']
+            )?.id
+
+            m.addLayer(
+                {
+                    'id': 'add-3d-buildings',
+                    'source': 'composite',
+                    'source-layer': 'building',
+                    'filter': ['==', 'extrude', 'true'],
+                    'type': 'fill-extrusion',
+                    'minzoom': 15,
+                    'paint': {
+                        'fill-extrusion-color': '#162033',
+                        'fill-extrusion-height': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            15,
+                            0,
+                            15.05,
+                            ['get', 'height']
+                        ],
+                        'fill-extrusion-base': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            15,
+                            0,
+                            15.05,
+                            ['get', 'min_height']
+                        ],
+                        'fill-extrusion-opacity': 0.6
+                    }
+                },
+                labelLayerId
+            )
         })
 
         m.on("moveend", () => {
-            if (isConfirmed) return
+            if (isConfirmedRef.current) return
             const center = m.getCenter()
             updateAddress(center.lat, center.lng)
         })
 
         return () => {
+            markerRef.current?.remove()
             m.remove()
         }
     }, [initialLat, initialLng, mapboxToken])
 
     const updateAddress = async (lat: number, lng: number) => {
-        // Simple reverse geocoding via Nominatim (OSM) to avoid extra Mapbox generic costs if desired, 
-        // or could use Mapbox Geocoding API. Using OSM for strictly "address display" cost saving.
         try {
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
             const data = await res.json()
@@ -95,7 +140,6 @@ export function CourtLocationManager({ onConfirm, initialLat = -32.89084, initia
 
         setIsSearching(true)
         try {
-            // Using OSM Nominatim for search to keep it free/simple for this demo
             const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery + " Mendoza Argentina")}&format=json&limit=1`)
             const data = await res.json()
 
@@ -103,7 +147,7 @@ export function CourtLocationManager({ onConfirm, initialLat = -32.89084, initia
                 const { lat, lon } = data[0]
                 map.current.flyTo({
                     center: [parseFloat(lon), parseFloat(lat)],
-                    zoom: 16,
+                    zoom: 17,
                     essential: true
                 })
             }
@@ -124,7 +168,26 @@ export function CourtLocationManager({ onConfirm, initialLat = -32.89084, initia
         map.current.scrollZoom.disable()
         map.current.touchZoomRotate.disable()
 
-        // Draw Polygon (approx 40x20m court)
+        // --- Add Custom Marker ---
+        const el = document.createElement('div')
+        el.className = 'flex flex-col items-center'
+        el.innerHTML = `
+            <div class="mb-2 px-2 py-1 rounded border border-[#A6FF4D] bg-[#0B0F14] text-[#A6FF4D] text-xs font-bold whitespace-nowrap shadow-lg">
+                Tu Cancha
+            </div>
+            <div class="relative">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" class="text-[#A6FF4D] drop-shadow-md">
+                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="#0B0F14" stroke="currentColor" stroke-width="2" />
+                   <circle cx="12" cy="10" r="3" fill="currentColor" />
+                </svg>
+            </div>
+        `
+
+        markerRef.current = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
+            .setLngLat(center)
+            .addTo(map.current)
+
+        // --- Draw Polygon (approx 40x20m court) ---
         // 0.0001 deg is roughly 11 meters
         const halfWidth = 0.0002 // ~22m
         const halfHeight = 0.0001 // ~11m
@@ -183,8 +246,8 @@ export function CourtLocationManager({ onConfirm, initialLat = -32.89084, initia
             })
         }
 
-        // Zoom in slightly to show the court
-        map.current.easeTo({ zoom: 18, pitch: 60 })
+        // Zoom in slightly to show the court details in 3D
+        map.current.easeTo({ zoom: 18, pitch: 60, bearing: -17.6 })
 
         onConfirm(lat, lng, address)
     }
@@ -198,12 +261,18 @@ export function CourtLocationManager({ onConfirm, initialLat = -32.89084, initia
         map.current.scrollZoom.enable()
         map.current.touchZoomRotate.enable()
 
+        // Remove Marker
+        if (markerRef.current) {
+            markerRef.current.remove()
+            markerRef.current = null
+        }
+
         // Remove layers
         if (map.current.getLayer("court-polygon-fill")) map.current.removeLayer("court-polygon-fill")
         if (map.current.getLayer("court-polygon-outline")) map.current.removeLayer("court-polygon-outline")
         if (map.current.getSource("court-polygon")) map.current.removeSource("court-polygon")
 
-        map.current.easeTo({ pitch: 45, zoom: 15 })
+        map.current.easeTo({ pitch: 45, zoom: 15.5 })
     }
 
     if (!mapboxToken) {
