@@ -7,6 +7,12 @@ create table if not exists public.beta_members (
   sport text,
   whatsapp text,
   allow_public boolean default false,
+  -- Court specific fields
+  court_name text,
+  court_address text,
+  court_lat double precision,
+  court_lng double precision,
+  court_status text default 'pending', -- pending, approved, rejected
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -15,10 +21,12 @@ create table if not exists public.beta_members (
 create or replace view public.public_beta_members as
 select
   user_id,
-  coalesce(full_name, 'Usuario') as display_name,
-  city,
+  coalesce(court_name, full_name, 'Usuario') as display_name,
+  coalesce(court_address, city) as city,
   sport,
   role,
+  court_lat,
+  court_lng,
   created_at
 from public.beta_members
 where allow_public = true;
