@@ -30,6 +30,7 @@ export function Hero() {
             const { count } = await supabase
                 .from("public_beta_members")
                 .select("*", { count: "exact", head: true })
+                .eq("role", "player")
 
             if (count !== null) setBetaCount(count)
 
@@ -37,6 +38,7 @@ export function Hero() {
             const { data } = await supabase
                 .from("public_beta_members")
                 .select("avatar_url, display_name")
+                .eq("role", "player")
                 .not("avatar_url", "is", null)
                 .order("created_at", { ascending: false })
                 .limit(5)

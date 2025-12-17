@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-    LogOut, Users, LayoutDashboard, Settings, Home, Eye, EyeOff,
-    Trash2, Edit, Plus, X, Check, Search, Filter, RefreshCw
+    Trash2, Edit, Plus, X, Check, Search, MapPin, Building, AlertCircle, RefreshCw,
+    Users, LogOut, Home, Settings, Eye, EyeOff
 } from "lucide-react"
 import Link from "next/link"
-import { deleteMember, updateMember, addMember, togglePublicVisibility, changeRole } from "./actions"
+import { deleteMember, updateMember, addMember, togglePublicVisibility, updateCourtStatus } from "./actions"
 
 interface Member {
     id: string
@@ -24,6 +24,11 @@ interface Member {
     created_at: string
     updated_at: string
     email?: string
+    // Court specific fields
+    court_name?: string
+    court_address?: string
+    court_status?: "pending" | "approved" | "rejected"
+    admin_notes?: string
 }
 
 interface AdminDashboardProps {
@@ -44,6 +49,7 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
     // Stats
     const playerCount = members.filter(m => m.role === 'player').length
     const courtCount = members.filter(m => m.role === 'court').length
+    const pendingCourtsCount = members.filter(m => m.role === 'court' && m.court_status === 'pending').length
     const publicCount = members.filter(m => m.allow_public).length
 
     // Filtered members
@@ -51,8 +57,16 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
         const matchesSearch = m.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             m.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             m.sport?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            m.email?.toLowerCase().includes(searchTerm.toLowerCase())
-        const matchesRole = filterRole === "all" || m.role === filterRole
+            m.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            m.court_name?.toLowerCase().includes(searchTerm.toLowerCase())
+
+        let matchesRole = true
+        if (filterRole === "pending") {
+            matchesRole = m.role === "court" && m.court_status === "pending"
+        } else if (filterRole !== "all") {
+            matchesRole = m.role === filterRole
+        }
+
         return matchesSearch && matchesRole
     })
 
@@ -80,7 +94,9 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
             sport: member.sport,
             role: member.role,
             whatsapp: member.whatsapp || "",
-            allow_public: member.allow_public
+            allow_public: member.allow_public,
+            court_name: member.court_name,
+            court_status: member.court_status
         })
     }
 
@@ -110,6 +126,19 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
         setIsLoading(false)
     }
 
+    const handleCourtStatus = async (userId: string, status: "approved" | "rejected") => {
+        if (!confirm(`¿Estás seguro de ${status === 'approved' ? 'APROBAR' : 'RECHAZAR'} esta cancha?`)) return
+
+        setIsLoading(true)
+        try {
+            await updateCourtStatus(userId, status)
+        } catch (error) {
+            console.error("Error updating court status:", error)
+            alert("Error al actualizar estado")
+        }
+        setIsLoading(false)
+    }
+
     const handleAddMember = async (formData: FormData) => {
         setIsLoading(true)
         try {
@@ -132,7 +161,7 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
     return (
         <div className="min-h-screen bg-background">
             {/* Admin Header */}
-            <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+            <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 w-full">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/" className="text-xl font-bold text-primary">Mi Partido</Link>
@@ -154,8 +183,8 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                 </div>
             </header>
 
-            <div className="container mx-auto px-4 py-8">
-                <div className="max-w-7xl mx-auto space-y-8">
+            <div className="container mx-auto px-4 py-8 max-w-7xl">
+                <div className="space-y-8">
 
                     {/* Title */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -166,6 +195,14 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                             </p>
                         </div>
                         <div className="flex gap-2">
+                            <Button
+                                variant={filterRole === "pending" ? "default" : "outline"}
+                                className={filterRole === "pending" ? "bg-yellow-500 hover:bg-yellow-600 text-white" : "border-yellow-500/50 text-yellow-600 hover:bg-yellow-500/10"}
+                                onClick={() => setFilterRole("pending")}
+                            >
+                                <AlertCircle className="w-4 h-4 mr-2" />
+                                Solicitudes ({pendingCourtsCount})
+                            </Button>
                             <Button onClick={() => window.location.reload()} variant="outline" size="sm">
                                 <RefreshCw className="w-4 h-4 mr-2" />
                                 Actualizar
@@ -181,7 +218,7 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <StatCard title="Total Usuarios" value={count} icon={<Users className="w-5 h-5" />} />
                         <StatCard title="Jugadores" value={playerCount} icon={<Users className="w-5 h-5" />} color="blue" />
-                        <StatCard title="Canchas" value={courtCount} icon={<LayoutDashboard className="w-5 h-5" />} color="yellow" />
+                        <StatCard title="Canchas" value={courtCount} icon={<Building className="w-5 h-5" />} color="yellow" />
                         <StatCard title="Visibles Públicos" value={publicCount} icon={<Eye className="w-5 h-5" />} color="green" />
                     </div>
 
@@ -223,21 +260,21 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                                 size="sm"
                                 onClick={() => setFilterRole("all")}
                             >
-                                Todos ({count})
+                                Todos
                             </Button>
                             <Button
                                 variant={filterRole === "player" ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => setFilterRole("player")}
                             >
-                                Jugadores ({playerCount})
+                                Jugadores
                             </Button>
                             <Button
                                 variant={filterRole === "court" ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => setFilterRole("court")}
                             >
-                                Canchas ({courtCount})
+                                Canchas
                             </Button>
                         </div>
                     </div>
@@ -245,7 +282,7 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                     {/* Add Member Form Modal */}
                     {showAddForm && (
                         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                            <div className="bg-card border border-border rounded-xl p-6 w-full max-w-md space-y-4">
+                            <div className="bg-card border border-border rounded-xl p-6 w-full max-w-md space-y-4 shadow-2xl">
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-xl font-bold">Agregar Usuario</h2>
                                     <button onClick={() => setShowAddForm(false)}>
@@ -296,24 +333,22 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                     )}
 
                     {/* Members Table */}
-                    <div className="bg-card border border-border rounded-xl overflow-hidden">
-                        <div className="p-4 border-b border-border">
+                    <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                        <div className="p-4 border-b border-border flex justify-between items-center bg-muted/20">
                             <h2 className="font-bold text-lg">
-                                Usuarios Beta ({filteredMembers.length})
+                                {filterRole === 'pending' ? 'Solicitudes Pendientes' : 'Usuarios Beta'} ({filteredMembers.length})
                             </h2>
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <table className="w-full text-sm">
                                 <thead className="bg-muted/50">
                                     <tr className="text-left text-xs text-muted-foreground uppercase">
                                         <th className="p-4">Usuario</th>
-                                        <th className="p-4">Ciudad</th>
-                                        <th className="p-4">Deporte</th>
+                                        <th className="p-4">Detalles</th>
                                         <th className="p-4">Rol</th>
-                                        <th className="p-4">WhatsApp</th>
-                                        <th className="p-4">Público</th>
-                                        <th className="p-4">Fecha</th>
+                                        <th className="p-4">Contacto</th>
+                                        <th className="p-4">Estado</th>
                                         <th className="p-4 text-right">Acciones</th>
                                     </tr>
                                 </thead>
@@ -323,71 +358,51 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                                             {editingId === member.user_id ? (
                                                 // Edit mode
                                                 <>
-                                                    <td className="p-4">
-                                                        <Input
-                                                            value={editData.full_name || ""}
-                                                            onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
-                                                            className="h-8 text-sm mb-1"
-                                                        />
-                                                        <span className="text-xs text-muted-foreground">{member.email}</span>
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <Input
-                                                            value={editData.city || ""}
-                                                            onChange={(e) => setEditData({ ...editData, city: e.target.value })}
-                                                            className="h-8 text-sm w-24"
-                                                        />
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <Input
-                                                            value={editData.sport || ""}
-                                                            onChange={(e) => setEditData({ ...editData, sport: e.target.value })}
-                                                            className="h-8 text-sm w-24"
-                                                        />
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <select
-                                                            value={editData.role || "player"}
-                                                            onChange={(e) => setEditData({ ...editData, role: e.target.value })}
-                                                            className="h-8 rounded border border-input bg-background px-2 text-sm"
-                                                        >
-                                                            <option value="player">Jugador</option>
-                                                            <option value="court">Cancha</option>
-                                                        </select>
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <Input
-                                                            value={editData.whatsapp || ""}
-                                                            onChange={(e) => setEditData({ ...editData, whatsapp: e.target.value })}
-                                                            className="h-8 text-sm w-32"
-                                                        />
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={editData.allow_public}
-                                                            onChange={(e) => setEditData({ ...editData, allow_public: e.target.checked })}
-                                                        />
-                                                    </td>
-                                                    <td className="p-4 text-xs text-muted-foreground">
-                                                        {new Date(member.created_at).toLocaleDateString('es-AR')}
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <div className="flex gap-1 justify-end">
-                                                            <Button
-                                                                size="sm"
-                                                                onClick={() => handleSaveEdit(member.user_id)}
-                                                                disabled={isLoading}
-                                                            >
-                                                                <Check className="w-4 h-4" />
-                                                            </Button>
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline"
-                                                                onClick={() => { setEditingId(null); setEditData({}) }}
-                                                            >
-                                                                <X className="w-4 h-4" />
-                                                            </Button>
+                                                    <td className="p-4 col-span-6" colSpan={6}>
+                                                        <div className="grid grid-cols-2 gap-4 p-2 bg-muted/20 rounded-lg">
+                                                            <div className="col-span-2 font-bold mb-2">Editando: {member.full_name}</div>
+                                                            <div>
+                                                                <Label className="text-xs">Nombre</Label>
+                                                                <Input
+                                                                    value={editData.full_name || ""}
+                                                                    onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
+                                                                    className="h-8 text-sm"
+                                                                />
+                                                            </div>
+                                                            {member.role === 'court' && (
+                                                                <div>
+                                                                    <Label className="text-xs">Nombre Cancha</Label>
+                                                                    <Input
+                                                                        value={editData.court_name || ""}
+                                                                        onChange={(e) => setEditData({ ...editData, court_name: e.target.value })}
+                                                                        className="h-8 text-sm"
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                            <div>
+                                                                <Label className="text-xs">Ciudad</Label>
+                                                                <Input
+                                                                    value={editData.city || ""}
+                                                                    onChange={(e) => setEditData({ ...editData, city: e.target.value })}
+                                                                    className="h-8 text-sm"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <Label className="text-xs">WhatsApp</Label>
+                                                                <Input
+                                                                    value={editData.whatsapp || ""}
+                                                                    onChange={(e) => setEditData({ ...editData, whatsapp: e.target.value })}
+                                                                    className="h-8 text-sm"
+                                                                />
+                                                            </div>
+                                                            <div className="col-span-2 flex justify-end gap-2 mt-2">
+                                                                <Button size="sm" variant="outline" onClick={() => { setEditingId(null); setEditData({}) }}>
+                                                                    Cancelar
+                                                                </Button>
+                                                                <Button size="sm" onClick={() => handleSaveEdit(member.user_id)}>
+                                                                    Guardar Cambios
+                                                                </Button>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </>
@@ -396,68 +411,109 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                                                 <>
                                                     <td className="p-4">
                                                         <div className="flex items-center gap-3">
-                                                            {member.avatar_url ? (
-                                                                <img
-                                                                    src={member.avatar_url}
-                                                                    alt={member.full_name}
-                                                                    className="w-8 h-8 rounded-full"
-                                                                />
-                                                            ) : (
-                                                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">
-                                                                    {member.full_name?.charAt(0).toUpperCase()}
-                                                                </div>
-                                                            )}
+                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${member.role === 'court' ? 'bg-yellow-500/10 text-yellow-600' : 'bg-primary/10 text-primary'
+                                                                }`}>
+                                                                {member.role === 'court' ? <Building className="w-4 h-4" /> : member.full_name?.charAt(0).toUpperCase()}
+                                                            </div>
                                                             <div>
-                                                                <p className="font-medium text-sm">{member.full_name}</p>
+                                                                <p className="font-medium">{member.full_name}</p>
                                                                 <p className="text-xs text-muted-foreground truncate max-w-[150px]" title={member.email || ''}>
                                                                     {member.email || member.user_id.slice(0, 8)}
                                                                 </p>
+                                                                {member.role === 'court' && member.court_name && (
+                                                                    <p className="text-xs text-yellow-600 font-medium">{member.court_name}</p>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="p-4 text-sm">{member.city}</td>
-                                                    <td className="p-4 text-sm">{member.sport}</td>
                                                     <td className="p-4">
-                                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${member.role === 'court'
-                                                            ? 'bg-yellow-500/10 text-yellow-600'
-                                                            : 'bg-blue-500/10 text-blue-600'
+                                                        <div className="flex flex-col text-xs text-muted-foreground">
+                                                            <span className="flex items-center gap-1">
+                                                                <MapPin className="w-3 h-3" /> {member.city}
+                                                            </span>
+                                                            <span>{member.sport}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-4">
+                                                        <span className={`text-xs px-2 py-1 rounded-full font-medium border ${member.role === 'court'
+                                                            ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20'
+                                                            : 'bg-blue-500/10 text-blue-600 border-blue-500/20'
                                                             }`}>
                                                             {member.role === 'court' ? 'Cancha' : 'Jugador'}
                                                         </span>
                                                     </td>
-                                                    <td className="p-4 text-sm text-muted-foreground">
+                                                    <td className="p-4 text-xs text-muted-foreground">
                                                         {member.whatsapp || '-'}
                                                     </td>
                                                     <td className="p-4">
-                                                        <button
-                                                            onClick={() => handleTogglePublic(member.user_id, member.allow_public)}
-                                                            className="hover:opacity-70 transition-opacity"
-                                                            title="Click para cambiar"
-                                                        >
-                                                            {member.allow_public ? (
-                                                                <Eye className="w-4 h-4 text-green-500" />
-                                                            ) : (
-                                                                <EyeOff className="w-4 h-4 text-muted-foreground" />
-                                                            )}
-                                                        </button>
-                                                    </td>
-                                                    <td className="p-4 text-xs text-muted-foreground">
-                                                        {new Date(member.created_at).toLocaleDateString('es-AR')}
+                                                        {member.role === 'court' ? (
+                                                            <div className="flex flex-col gap-1">
+                                                                <span className={`text-xs font-medium ${member.court_status === 'approved' ? 'text-green-500' :
+                                                                    member.court_status === 'rejected' ? 'text-red-500' :
+                                                                        'text-yellow-500'
+                                                                    }`}>
+                                                                    {member.court_status === 'approved' ? 'Aprobada' :
+                                                                        member.court_status === 'rejected' ? 'Rechazada' :
+                                                                            'Pendiente'}
+                                                                </span>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => handleTogglePublic(member.user_id, member.allow_public)}
+                                                                className="hover:opacity-70 transition-opacity"
+                                                                title="Click para cambiar visibilidad"
+                                                            >
+                                                                {member.allow_public ? (
+                                                                    <Eye className="w-4 h-4 text-green-500" />
+                                                                ) : (
+                                                                    <EyeOff className="w-4 h-4 text-muted-foreground" />
+                                                                )}
+                                                            </button>
+                                                        )}
                                                     </td>
                                                     <td className="p-4">
-                                                        <div className="flex gap-1 justify-end">
+                                                        <div className="flex gap-1 justify-end items-center">
+
+                                                            {/* Approval Buttons for Pending Courts */}
+                                                            {member.role === 'court' && member.court_status === 'pending' && (
+                                                                <>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        className="h-8 w-8 border-green-500/50 text-green-500 hover:bg-green-500/20"
+                                                                        onClick={() => handleCourtStatus(member.user_id, 'approved')}
+                                                                        title="Aprobar Cancha"
+                                                                        disabled={isLoading}
+                                                                    >
+                                                                        <Check className="w-4 h-4" />
+                                                                    </Button>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        className="h-8 w-8 border-red-500/50 text-red-500 hover:bg-red-500/20 mr-2"
+                                                                        onClick={() => handleCourtStatus(member.user_id, 'rejected')}
+                                                                        title="Rechazar Cancha"
+                                                                        disabled={isLoading}
+                                                                    >
+                                                                        <X className="w-4 h-4" />
+                                                                    </Button>
+                                                                </>
+                                                            )}
+
                                                             <Button
                                                                 size="sm"
                                                                 variant="ghost"
+                                                                className="h-8 w-8"
                                                                 onClick={() => handleEdit(member)}
                                                             >
                                                                 <Edit className="w-4 h-4" />
                                                             </Button>
                                                             {deleteConfirm === member.user_id ? (
-                                                                <div className="flex gap-1">
+                                                                <div className="flex gap-1 animate-in fade-in zoom-in duration-200">
                                                                     <Button
                                                                         size="sm"
                                                                         variant="destructive"
+                                                                        className="h-8 w-8"
                                                                         onClick={() => handleDelete(member.user_id)}
                                                                         disabled={isLoading}
                                                                     >
@@ -466,6 +522,7 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                                                                     <Button
                                                                         size="sm"
                                                                         variant="outline"
+                                                                        className="h-8 w-8"
                                                                         onClick={() => setDeleteConfirm(null)}
                                                                     >
                                                                         <X className="w-4 h-4" />
@@ -475,7 +532,7 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                                                                 <Button
                                                                     size="sm"
                                                                     variant="ghost"
-                                                                    className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                                                                    className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-500/10"
                                                                     onClick={() => setDeleteConfirm(member.user_id)}
                                                                 >
                                                                     <Trash2 className="w-4 h-4" />
@@ -492,17 +549,18 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                         </div>
 
                         {filteredMembers.length === 0 && (
-                            <div className="p-8 text-center text-muted-foreground">
-                                No se encontraron usuarios.
+                            <div className="p-12 text-center text-muted-foreground flex flex-col items-center justify-center gap-2">
+                                <Search className="w-8 h-8 opacity-20" />
+                                <p>No se encontraron resultados.</p>
                             </div>
                         )}
                     </div>
 
                     {/* Tips */}
-                    <div className="text-sm text-muted-foreground space-y-1">
-                        <p>💡 <strong>Editar:</strong> Click en el lápiz para modificar cualquier campo.</p>
-                        <p>👁 <strong>Visibilidad:</strong> Click en el ojo para mostrar/ocultar de la lista pública.</p>
-                        <p>🗑 <strong>Eliminar:</strong> Click en el tacho, confirmar con el tick.</p>
+                    <div className="text-sm text-muted-foreground space-y-1 bg-muted/20 p-4 rounded-lg">
+                        <p>💡 <strong>Solicitudes:</strong> Usá el filtro "Solicitudes" para ver canchas esperando aprobación.</p>
+                        <p>✅ <strong>Aprobar:</strong> Habilita el acceso de la cancha al sistema.</p>
+                        <p>❌ <strong>Rechazar:</strong> Bloquea el acceso y marca la solicitud como denegada.</p>
                     </div>
 
                 </div>
@@ -520,12 +578,12 @@ function StatCard({ title, value, icon, color = "primary" }: {
     const colors = {
         primary: "bg-primary/10 text-primary",
         blue: "bg-blue-500/10 text-blue-500",
-        yellow: "bg-yellow-500/10 text-yellow-500",
+        yellow: "bg-yellow-500/10 text-yellow-600",
         green: "bg-green-500/10 text-green-500",
     }
 
     return (
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
             <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-lg ${colors[color]} flex items-center justify-center`}>
                     {icon}
