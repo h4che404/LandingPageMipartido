@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer"
 
 export default function OrganizersPage() {
     return (
-        <div className="flex flex-col min-h-screen mode-venue bg-background text-foreground">
+        <div className="flex flex-col min-h-screen bg-background text-foreground">
             <HeroCanchas />
             <OrganizersFeatures />
             <OrganizersCTA />

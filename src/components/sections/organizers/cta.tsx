@@ -15,7 +15,7 @@ export function OrganizersCTA() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    className="max-w-2xl mx-auto bg-card border border-white/10 p-12 rounded-3xl shadow-2xl space-y-8"
+                    className="max-w-2xl mx-auto bg-card border border-border p-12 rounded-3xl shadow-2xl space-y-8"
                 >
                     <h2 className="text-3xl font-bold">¿Tenés cancha en Zona Este?</h2>
                     <p className="text-muted-foreground text-lg">

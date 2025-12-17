@@ -33,7 +33,7 @@ const features = [
 
 export function OrganizersFeatures() {
     return (
-        <section className="py-24 bg-card/10">
+        <section className="py-24 bg-muted/50">
             <div className="container mx-auto px-4">
                 <div className="max-w-2xl mx-auto text-center mb-16">
                     <h2 className="text-3xl font-bold mb-4">Menos WhatsApp, más orden</h2>
