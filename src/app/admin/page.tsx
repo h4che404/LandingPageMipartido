@@ -18,29 +18,33 @@ export default async function AdminPage() {
     if (!user) {
         return redirect("/login")
     }
-
+    // Check if user is admin
     if (!ADMIN_EMAILS.includes(user.email || '')) {
         return redirect("/beta")
     }
 
-    // Use admin client to fetch all auth users (to get emails)
-    const adminClient = createAdminClient()
-    const { data: { users }, error: usersError } = await adminClient.auth.admin.listUsers()
-
-    if (usersError) {
-        console.error("Error fetching users:", usersError)
+    let users: any[] | null = []
+    try {
+        // Use admin client to fetch all auth users (to get emails)
+        // This might fail if SUPABASE_SERVICE_ROLE_KEY is missing
+        const adminClient = createAdminClient()
+        const { data: authData, error: usersError } = await adminClient.auth.admin.listUsers()
+        if (usersError) throw usersError
+        users = authData.users
+    } catch (error) {
+        console.error("Error fetching admin users (likely missing SERVICE_ROLE_KEY):", error)
+        // Continue without emails if this fails
     }
 
-    // Also use admin client to fetch beta_members to bypass RLS policies if they are restrictive
-    // (This fixes the issue where admins couldn't see other users data)
-    const { data: members, count } = await adminClient
+    // Fetch beta members (standard client)
+    const { data: members, count } = await supabase
         .from("beta_members")
         .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
 
     // Map emails to members
     const membersWithEmail = members?.map(member => {
-        const authUser = users?.find(u => u.id === member.user_id)
+        const authUser = users?.find((u: any) => u.id === member.user_id)
         return {
             ...member,
             email: authUser?.email || (member.user_id.startsWith('manual_') ? 'Manual' : 'No encontrado')
