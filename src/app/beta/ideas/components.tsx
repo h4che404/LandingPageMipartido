@@ -146,7 +146,8 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
                 }
             }
 
-            // Pass the image URL to the server action
+            // Pass the image URL to the server action and REMOVE the file
+            formData.delete("image") // Remove the file to avoid 1MB limit
             formData.set("imageUrl", imageUrl || "")
 
             await createIdea(formData)
