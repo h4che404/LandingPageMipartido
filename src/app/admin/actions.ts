@@ -9,28 +9,43 @@ import { createAdminClient } from "@/lib/supabase/admin"
 export async function deleteMember(userId: string) {
     const supabase = await createClient()
 
-    // If it's a manual user (starts with manual_), just delete from table
-    if (userId.startsWith("manual_")) {
-        const { error } = await supabase
-            .from("beta_members")
-            .delete()
-            .eq("user_id", userId)
+    try {
+        // If it's a manual user (starts with manual_), just delete from table
+        if (userId.startsWith("manual_")) {
+            const { error } = await supabase
+                .from("beta_members")
+                .delete()
+                .eq("user_id", userId)
 
-        if (error) throw error
-    } else {
-        // If it's a real user, delete from Auth (which cascades to table)
-        // We need service_role key to delete from Auth
-        const adminClient = createAdminClient()
-        const { error } = await adminClient.auth.admin.deleteUser(userId)
+            if (error) return { success: false, error: error.message }
+        } else {
+            // If it's a real user, delete from Auth (which cascades to table)
+            // We need service_role key to delete from Auth
+            try {
+                const adminClient = createAdminClient()
+                const { error } = await adminClient.auth.admin.deleteUser(userId)
 
-        if (error) {
-            console.error("Error deleting auth user:", error)
-            throw error
+                if (error) {
+                    console.error("Error deleting auth user:", error)
+                    return { success: false, error: error.message }
+                }
+            } catch (err: any) {
+                // If createAdminClient fails (missing key), try deleting just from the table as fallback
+                // or return a specific error
+                console.error("Admin client error:", err)
+                return {
+                    success: false,
+                    error: "Falta configuración de admin (Key). Asegurate de agregar SUPABASE_SERVICE_ROLE_KEY."
+                }
+            }
         }
-    }
 
-    revalidatePath("/admin")
-    revalidatePath("/")
+        revalidatePath("/admin")
+        revalidatePath("/")
+        return { success: true }
+    } catch (error: any) {
+        return { success: false, error: error.message || "Error desconocido" }
+    }
 }
 
 // Update a member

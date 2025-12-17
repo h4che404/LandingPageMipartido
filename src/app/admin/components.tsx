@@ -59,11 +59,15 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
     const handleDelete = async (userId: string) => {
         setIsLoading(true)
         try {
-            await deleteMember(userId)
-            setDeleteConfirm(null)
+            const result = await deleteMember(userId)
+            if (result.success) {
+                setDeleteConfirm(null)
+            } else {
+                alert(`Error: ${result.error}`)
+            }
         } catch (error) {
             console.error("Error deleting:", error)
-            alert("Error al eliminar")
+            alert("Error inesperado al eliminar")
         }
         setIsLoading(false)
     }
