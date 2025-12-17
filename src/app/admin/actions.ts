@@ -3,16 +3,31 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 
+import { createAdminClient } from "@/lib/supabase/admin"
+
 // Delete a member
 export async function deleteMember(userId: string) {
     const supabase = await createClient()
 
-    const { error } = await supabase
-        .from("beta_members")
-        .delete()
-        .eq("user_id", userId)
+    // If it's a manual user (starts with manual_), just delete from table
+    if (userId.startsWith("manual_")) {
+        const { error } = await supabase
+            .from("beta_members")
+            .delete()
+            .eq("user_id", userId)
 
-    if (error) throw error
+        if (error) throw error
+    } else {
+        // If it's a real user, delete from Auth (which cascades to table)
+        // We need service_role key to delete from Auth
+        const adminClient = createAdminClient()
+        const { error } = await adminClient.auth.admin.deleteUser(userId)
+
+        if (error) {
+            console.error("Error deleting auth user:", error)
+            throw error
+        }
+    }
 
     revalidatePath("/admin")
     revalidatePath("/")

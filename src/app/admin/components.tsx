@@ -23,6 +23,7 @@ interface Member {
     avatar_url: string | null
     created_at: string
     updated_at: string
+    email?: string
 }
 
 interface AdminDashboardProps {
@@ -49,7 +50,8 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
     const filteredMembers = members.filter(m => {
         const matchesSearch = m.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             m.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            m.sport?.toLowerCase().includes(searchTerm.toLowerCase())
+            m.sport?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            m.email?.toLowerCase().includes(searchTerm.toLowerCase())
         const matchesRole = filterRole === "all" || m.role === filterRole
         return matchesSearch && matchesRole
     })
@@ -205,7 +207,7 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <Input
-                                placeholder="Buscar por nombre, ciudad o deporte..."
+                                placeholder="Buscar por nombre, email, ciudad o deporte..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10"
@@ -321,8 +323,9 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                                                         <Input
                                                             value={editData.full_name || ""}
                                                             onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
-                                                            className="h-8 text-sm"
+                                                            className="h-8 text-sm mb-1"
                                                         />
+                                                        <span className="text-xs text-muted-foreground">{member.email}</span>
                                                     </td>
                                                     <td className="p-4">
                                                         <Input
@@ -402,8 +405,8 @@ export function AdminDashboard({ members, count, userEmail }: AdminDashboardProp
                                                             )}
                                                             <div>
                                                                 <p className="font-medium text-sm">{member.full_name}</p>
-                                                                <p className="text-xs text-muted-foreground">
-                                                                    {member.user_id.startsWith('manual_') ? 'Manual' : member.user_id.slice(0, 8)}...
+                                                                <p className="text-xs text-muted-foreground truncate max-w-[150px]" title={member.email || ''}>
+                                                                    {member.email || member.user_id.slice(0, 8)}
                                                                 </p>
                                                             </div>
                                                         </div>
