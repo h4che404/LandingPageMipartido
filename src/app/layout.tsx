@@ -47,6 +47,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+      </head>
       <body className={`${outfit.variable} font-sans antialiased bg-background text-foreground selection:bg-primary/20`}>
         <ThemeProvider defaultMode="amistoso" defaultColorScheme="system">
           <Header />
