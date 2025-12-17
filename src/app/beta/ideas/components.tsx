@@ -66,6 +66,8 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
     const [expandedIdea, setExpandedIdea] = useState<string | null>(null)
     const [newComment, setNewComment] = useState("")
     const [previewImage, setPreviewImage] = useState<string | null>(null)
+    const [ideaToDelete, setIdeaToDelete] = useState<string | null>(null)
+    const [isDeleting, setIsDeleting] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const getAuthor = (userId: string) => {
@@ -206,6 +208,19 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
         }
     }
 
+    const handleDeleteIdea = async () => {
+        if (!ideaToDelete) return
+        setIsDeleting(true)
+        try {
+            await deleteIdea(ideaToDelete)
+            setIdeas(prev => prev.filter(i => i.id !== ideaToDelete))
+            setIdeaToDelete(null)
+        } catch (e) {
+            console.error(e)
+        }
+        setIsDeleting(false)
+    }
+
     const getIdeaComments = (ideaId: string) => comments.filter(c => c.idea_id === ideaId)
     const getUserVote = (ideaId: string) => userVotes.find(v => v.idea_id === ideaId)?.vote_type
 
@@ -230,6 +245,43 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
             </header>
 
             <main className="container mx-auto px-4 py-8 max-w-3xl">
+                {/* Delete Confirmation Modal */}
+                {ideaToDelete && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-card border border-border rounded-xl p-6 w-full max-w-sm space-y-4 animate-in fade-in zoom-in-95">
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
+                                    <Trash2 className="w-6 h-6 text-red-500" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold">Eliminar idea</h2>
+                                    <p className="text-sm text-muted-foreground">Esta acción no se puede deshacer</p>
+                                </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                ¿Estás seguro que querés eliminar esta idea? Se borrarán también todos los votos y comentarios.
+                            </p>
+                            <div className="flex gap-2 pt-2">
+                                <Button
+                                    variant="outline"
+                                    className="flex-1"
+                                    onClick={() => setIdeaToDelete(null)}
+                                    disabled={isDeleting}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                                    onClick={handleDeleteIdea}
+                                    disabled={isDeleting}
+                                >
+                                    {isDeleting ? "Eliminando..." : "Eliminar"}
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* New Idea Modal */}
                 {showNewForm && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -383,17 +435,7 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
                                             {/* Delete button for owner */}
                                             {idea.user_id === currentUserId && (
                                                 <button
-                                                    onClick={async () => {
-                                                        if (confirm("¿Estás seguro que querés eliminar esta idea?")) {
-                                                            try {
-                                                                await deleteIdea(idea.id)
-                                                                setIdeas(prev => prev.filter(i => i.id !== idea.id))
-                                                            } catch (e) {
-                                                                console.error(e)
-                                                                alert("Error al eliminar")
-                                                            }
-                                                        }
-                                                    }}
+                                                    onClick={() => setIdeaToDelete(idea.id)}
                                                     className="p-2 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
                                                     title="Eliminar idea"
                                                 >
