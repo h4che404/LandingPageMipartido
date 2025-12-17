@@ -19,23 +19,32 @@ export async function createIdea(formData: FormData) {
 
     // Upload image if provided
     if (imageFile && imageFile.size > 0 && imageFile.type.startsWith('image/')) {
-        const fileExt = imageFile.name.split('.').pop() || 'png'
-        const fileName = `ideas/${user.id}/${Date.now()}.${fileExt}`
+        try {
+            const fileExt = imageFile.name.split('.').pop() || 'png'
+            const fileName = `${user.id}/${Date.now()}.${fileExt}`
 
-        const { error: uploadError } = await supabase.storage
-            .from("ideas-images")
-            .upload(fileName, imageFile, {
-                cacheControl: '3600',
-                upsert: false
-            })
+            // Convert File to ArrayBuffer for Supabase compatibility
+            const arrayBuffer = await imageFile.arrayBuffer()
+            const buffer = Buffer.from(arrayBuffer)
 
-        if (!uploadError) {
-            const { data: { publicUrl } } = supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from("ideas-images")
-                .getPublicUrl(fileName)
-            imageUrl = publicUrl
-        } else {
-            console.error("Upload error:", uploadError)
+                .upload(fileName, buffer, {
+                    contentType: imageFile.type,
+                    cacheControl: '3600',
+                    upsert: false
+                })
+
+            if (!uploadError) {
+                const { data: { publicUrl } } = supabase.storage
+                    .from("ideas-images")
+                    .getPublicUrl(fileName)
+                imageUrl = publicUrl
+            } else {
+                console.error("Upload error:", uploadError.message)
+            }
+        } catch (e) {
+            console.error("Image processing error:", e)
         }
     }
 
