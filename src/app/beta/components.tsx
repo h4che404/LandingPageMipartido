@@ -98,8 +98,8 @@ export function BetaProfileForm({ defaultName }: BetaProfileFormProps) {
                         type="button"
                         onClick={() => setRole("player")}
                         className={`flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all ${role === "player"
-                                ? "border-primary bg-primary/10 text-primary"
-                                : "border-border hover:border-primary/50"
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
                             }`}
                     >
                         <User className="w-5 h-5" />
@@ -109,8 +109,8 @@ export function BetaProfileForm({ defaultName }: BetaProfileFormProps) {
                         type="button"
                         onClick={() => setRole("court")}
                         className={`flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all ${role === "court"
-                                ? "border-primary bg-primary/10 text-primary"
-                                : "border-border hover:border-primary/50"
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
                             }`}
                     >
                         <Building2 className="w-5 h-5" />
@@ -287,5 +287,43 @@ export function BetaProfileForm({ defaultName }: BetaProfileFormProps) {
                 {role === "player" ? "Acceder al portal beta" : "Enviar solicitud"}
             </Button>
         </form>
+    )
+}
+
+// Reusable Feature Card
+export function FeatureCard({ icon, title, description, status }: {
+    icon: React.ReactNode,
+    title: string,
+    description: string,
+    status: string
+}) {
+    const statusColors = status === 'En desarrollo'
+        ? 'bg-blue-500/10 text-blue-500 border-blue-500/30'
+        : 'bg-yellow-500/10 text-yellow-600 border-yellow-500/30'
+
+    return (
+        <div className="bg-card border border-border rounded-xl p-5 space-y-3">
+            <div className="flex items-center justify-between">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    {icon}
+                </div>
+                <span className={`text-xs px-2 py-1 rounded-full border ${statusColors}`}>
+                    {status}
+                </span>
+            </div>
+            <h3 className="font-bold">{title}</h3>
+            <p className="text-sm text-muted-foreground">{description}</p>
+        </div>
+    )
+}
+
+// Reusable Stat Card
+export function StatCard({ title, value, subtitle }: { title: string, value: string, subtitle: string }) {
+    return (
+        <div className="bg-card border border-border rounded-xl p-5">
+            <p className="text-sm text-muted-foreground">{title}</p>
+            <p className="text-3xl font-bold mt-1">{value}</p>
+            <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+        </div>
     )
 }
