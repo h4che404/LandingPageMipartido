@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 
-// Create a new idea with optional image
+// Create a new idea - imageUrl is now passed directly (uploaded from client)
 export async function createIdea(formData: FormData) {
     const supabase = await createClient()
 
@@ -13,47 +13,14 @@ export async function createIdea(formData: FormData) {
     const title = formData.get("title") as string
     const description = formData.get("description") as string
     const category = formData.get("category") as string
-    const imageFile = formData.get("image") as File | null
-
-    let imageUrl = null
-
-    // Upload image if provided
-    if (imageFile && imageFile.size > 0 && imageFile.type.startsWith('image/')) {
-        try {
-            const fileExt = imageFile.name.split('.').pop() || 'png'
-            const fileName = `${user.id}/${Date.now()}.${fileExt}`
-
-            // Convert File to ArrayBuffer for Supabase compatibility
-            const arrayBuffer = await imageFile.arrayBuffer()
-            const buffer = Buffer.from(arrayBuffer)
-
-            const { error: uploadError } = await supabase.storage
-                .from("ideas-images")
-                .upload(fileName, buffer, {
-                    contentType: imageFile.type,
-                    cacheControl: '3600',
-                    upsert: false
-                })
-
-            if (!uploadError) {
-                const { data: { publicUrl } } = supabase.storage
-                    .from("ideas-images")
-                    .getPublicUrl(fileName)
-                imageUrl = publicUrl
-            } else {
-                console.error("Upload error:", uploadError.message)
-            }
-        } catch (e) {
-            console.error("Image processing error:", e)
-        }
-    }
+    const imageUrl = formData.get("imageUrl") as string | null
 
     const { error } = await supabase.from("beta_ideas").insert({
         user_id: user.id,
         title,
         description,
         category,
-        image_url: imageUrl,
+        image_url: imageUrl || null,
         votes: 0,
         status: "pending"
     })
@@ -111,36 +78,17 @@ export async function voteIdea(ideaId: string, action: "up" | "down") {
     revalidatePath("/beta/ideas")
 }
 
-// Add a comment with optional image
-export async function addComment(ideaId: string, content: string, imageFile?: File) {
+// Add a comment
+export async function addComment(ideaId: string, content: string) {
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error("Not authenticated")
 
-    let imageUrl = null
-
-    if (imageFile && imageFile.size > 0) {
-        const fileExt = imageFile.name.split('.').pop()
-        const fileName = `comments/${user.id}/${Date.now()}.${fileExt}`
-
-        const { error: uploadError } = await supabase.storage
-            .from("ideas-images")
-            .upload(fileName, imageFile)
-
-        if (!uploadError) {
-            const { data: { publicUrl } } = supabase.storage
-                .from("ideas-images")
-                .getPublicUrl(fileName)
-            imageUrl = publicUrl
-        }
-    }
-
     const { error } = await supabase.from("beta_idea_comments").insert({
         idea_id: ideaId,
         user_id: user.id,
-        content,
-        image_url: imageUrl
+        content
     })
 
     if (error) throw error

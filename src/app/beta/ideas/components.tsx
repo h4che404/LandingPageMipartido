@@ -119,7 +119,36 @@ export function IdeasForum({ initialIdeas, initialUserVotes, initialComments, me
     const handleSubmit = async (formData: FormData) => {
         setIsSubmitting(true)
         formData.set("category", selectedCategory)
+
         try {
+            // Upload image client-side first
+            const imageFile = fileInputRef.current?.files?.[0]
+            let imageUrl = null
+
+            if (imageFile && imageFile.size > 0) {
+                const supabase = createClient()
+                const fileExt = imageFile.name.split('.').pop() || 'png'
+                const fileName = `${currentUserId}/${Date.now()}.${fileExt}`
+
+                const { error: uploadError } = await supabase.storage
+                    .from("ideas-images")
+                    .upload(fileName, imageFile, {
+                        cacheControl: '3600'
+                    })
+
+                if (!uploadError) {
+                    const { data: { publicUrl } } = supabase.storage
+                        .from("ideas-images")
+                        .getPublicUrl(fileName)
+                    imageUrl = publicUrl
+                } else {
+                    console.error("Upload error:", uploadError.message)
+                }
+            }
+
+            // Pass the image URL to the server action
+            formData.set("imageUrl", imageUrl || "")
+
             await createIdea(formData)
             setShowNewForm(false)
             setSelectedCategory("feature")
