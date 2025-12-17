@@ -1,12 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { upsertBetaProfile } from "./actions"
 import { LogOut, Home, Monitor, MessageSquare, Zap, Calendar, Users, TrendingUp, Bell } from "lucide-react"
 import Link from "next/link"
+import { BetaProfileForm } from "./components"
 
 export default async function BetaPage() {
     const supabase = await createClient()
@@ -75,80 +72,7 @@ export default async function BetaPage() {
                 </div>
 
                 <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-                    <form action={upsertBetaProfile} className="space-y-6">
-                        <div className="space-y-2">
-                            <Label htmlFor="full_name">Nombre completo</Label>
-                            <Input
-                                id="full_name"
-                                name="full_name"
-                                defaultValue={user.user_metadata.full_name || ""}
-                                placeholder="Juan Pérez"
-                                required
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="city">Ciudad</Label>
-                                <Input
-                                    id="city"
-                                    name="city"
-                                    defaultValue="Mendoza"
-                                    placeholder="Godoy Cruz"
-                                    required
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="sport">Deporte</Label>
-                                <select
-                                    id="sport"
-                                    name="sport"
-                                    required
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                >
-                                    <option value="" disabled>Seleccioná un deporte</option>
-                                    <option value="Fútbol">⚽ Fútbol</option>
-                                    <option value="Pádel">🎾 Pádel</option>
-                                    <option value="Tenis">🏸 Tenis</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="whatsapp">WhatsApp (Opcional)</Label>
-                            <Input
-                                id="whatsapp"
-                                name="whatsapp"
-                                placeholder="+54 9 261 ..."
-                            />
-                            <p className="text-[10px] text-muted-foreground">
-                                Solo para notificarte cuando la app esté lista. No spam.
-                            </p>
-                        </div>
-
-                        <div className="flex items-start space-x-3 pt-2">
-                            <Checkbox
-                                id="allow_public"
-                                name="allow_public"
-                                defaultChecked={true}
-                            />
-                            <div className="grid gap-1.5 leading-none">
-                                <Label
-                                    htmlFor="allow_public"
-                                    className="text-sm font-medium leading-none"
-                                >
-                                    Aparecer en la lista pública
-                                </Label>
-                                <p className="text-xs text-muted-foreground">
-                                    Tu nombre y ciudad aparecerán en la landing page.
-                                </p>
-                            </div>
-                        </div>
-
-                        <Button type="submit" className="w-full">
-                            Acceder al portal beta
-                        </Button>
-                    </form>
+                    <BetaProfileForm defaultName={user.user_metadata.full_name || ""} />
                 </div>
 
                 <div className="text-center">
