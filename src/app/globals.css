@@ -187,25 +187,46 @@
    BG: Dark Navy #0B0F19
    Acts as a local "Dark Theme" override
    ======================================== */
+/* ========================================
+   VENUE / B2B OVERLAY
+   Used specifically for the Court Owner landing section
+   CTA: Yellow #facc15
+   BG: Dark Navy #0B0F19
+   Acts as a local "Dark Theme" override
+   ======================================== */
+/* 
 .mode-venue {
   --venue-cta: #facc15;
   --venue-cta-text: #0B0F19;
   --venue-bg: #0B0F19;
   --venue-highlight: #3B82F6;
-  /* Keep blue for trust accents */
 
-  /* Override Global Theme Tokens locally */
+
   --background: #0B0F19;
   --foreground: #FFFFFF;
   --card: #111827;
-  /* Lighter navy for cards */
   --card-foreground: #FFFFFF;
   --muted: #1F2937;
   --muted-foreground: #9CA3AF;
   --primary: #facc15;
-  /* Yellow is primary here */
   --primary-foreground: #0B0F19;
   --border: #1F2937;
+} 
+*/
+
+/* Instead of full override, we define specific venue vars that adapt */
+:root {
+  --venue-cta: #3B82F6;
+  /* Default Blue */
+  --venue-cta-text: #FFFFFF;
+  --venue-bg: var(--background);
+  --venue-highlight: var(--primary);
+}
+
+.mode-competitivo {
+  --venue-cta: #A6FF4D;
+  /* Lime */
+  --venue-cta-text: #0F1726;
 }
 
 @layer base {
