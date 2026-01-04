@@ -1,0 +1,25 @@
+{
+    "version": "1.0.0",
+    "mandatory": false,
+    "minSupportedVersion": "1.0.0",
+    "channel": "stable",
+    "publishedAt": "2026-01-04T12:00:00Z",
+    "notes": "Lanzamiento inicial de Mi Partido Desktop.",
+    "downloads": {
+        "windows": {
+            "url": "https://landing-page-mipartido.vercel.app/dist/windows/MiPartido-1.0.0.msi",
+            "sha256": "",
+            "size": 0
+        },
+        "mac": {
+            "url": "https://landing-page-mipartido.vercel.app/dist/mac/MiPartido-1.0.0.dmg",
+            "sha256": "",
+            "size": 0
+        },
+        "linux": {
+            "url": "https://landing-page-mipartido.vercel.app/dist/linux/MiPartido-1.0.0.deb",
+            "sha256": "",
+            "size": 0
+        }
+    }
+}
