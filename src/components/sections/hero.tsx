@@ -9,7 +9,6 @@ import { useTheme } from "@/components/theme-provider"
 import { useState, useEffect } from "react"
 import { BetaJoinModal } from "@/components/features/beta-join-modal"
 import { createClient } from "@/lib/supabase/client"
-import DownloadButton from "@/components/DownloadButton"
 
 interface BetaMember {
     avatar_url: string | null
@@ -154,7 +153,23 @@ export function Hero() {
                             transition={{ delay: 0.3 }}
                             className="flex flex-col sm:flex-row gap-4 pt-4"
                         >
-                            <DownloadButton />
+                            <Button
+                                size="lg"
+                                onClick={() => openModal("player")}
+                                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-8 h-14 font-bold text-base shadow-[0_0_20px_rgba(var(--primary),0.2)]"
+                            >
+                                Entrar a la beta
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </Button>
+
+                            <Button
+                                size="lg"
+                                variant="outline"
+                                onClick={() => openModal("court")}
+                                className="border-border bg-transparent text-foreground hover:bg-card rounded-xl h-14 px-8 text-base"
+                            >
+                                Sumar mi cancha
+                            </Button>
                         </motion.div>
 
                         <BetaJoinModal

@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, BellOff, LayoutList, MapPin, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import DownloadButton from "@/components/DownloadButton"
 
 export function ForCourts() {
     return (
@@ -47,12 +48,7 @@ export function ForCourts() {
 
                         {/* CTA */}
                         <div className="shrink-0">
-                            <Button asChild className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
-                                <Link href="/canchas">
-                                    Sumar mi cancha
-                                    <ArrowRight className="ml-2 w-4 h-4" />
-                                </Link>
-                            </Button>
+                            <DownloadButton />
                         </div>
                     </div>
                 </motion.div>
