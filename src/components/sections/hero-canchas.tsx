@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
-import { ArrowRight, Bell, Sliders, TrendingUp, Monitor, Zap } from "lucide-react"
+import { ArrowRight, Bell, Sliders, TrendingUp, Monitor } from "lucide-react"
+import DownloadButton from "@/components/DownloadButton"
 
 export function HeroCanchas() {
     const scrollToForm = () => {
@@ -73,25 +74,9 @@ export function HeroCanchas() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="flex flex-col sm:flex-row gap-4 pt-4"
+                            className="pt-4"
                         >
-                            <Button
-                                size="lg"
-                                onClick={scrollToForm}
-                                className="bg-[var(--venue-cta)] text-[var(--venue-cta-text)] hover:bg-[var(--venue-cta)]/90 rounded-xl px-8 h-14 font-bold text-base shadow-[0_0_20px_rgba(250,204,21,0.2)]"
-                            >
-                                Sumar mi cancha al piloto
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </Button>
-
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                className="border-white/20 bg-transparent text-white hover:bg-white/10 rounded-xl h-14 px-8 text-base"
-                            >
-                                Ver demo del panel
-                                <Monitor className="ml-2 w-5 h-5 opacity-70" />
-                            </Button>
+                            <DownloadButton />
                         </motion.div>
                     </div>
 
