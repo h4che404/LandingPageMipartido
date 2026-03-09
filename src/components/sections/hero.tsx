@@ -1,13 +1,12 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
-import { ArrowRight, Trophy, Zap } from "lucide-react"
+import { Trophy, Zap } from "lucide-react"
 import { PhoneMockup } from "@/components/ui/phone-mockup"
 import Link from "next/link"
 import { useTheme } from "@/components/theme-provider"
 import { useState, useEffect } from "react"
-import { BetaJoinModal } from "@/components/features/beta-join-modal"
+import { CountdownTimer } from "@/components/features/countdown-timer"
 import { createClient } from "@/lib/supabase/client"
 
 interface BetaMember {
@@ -17,8 +16,6 @@ interface BetaMember {
 
 export function Hero() {
     const { mode, setMode } = useTheme()
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [modalRole, setModalRole] = useState<"player" | "court">("player")
     const [betaMembers, setBetaMembers] = useState<BetaMember[]>([])
     const [betaCount, setBetaCount] = useState(0)
 
@@ -48,16 +45,6 @@ export function Hero() {
 
         fetchBetaMembers()
     }, [])
-
-    const openModal = (role: "player" | "court") => {
-        console.log(`cta_join_click: ${role}`)
-        setModalRole(role)
-        setIsModalOpen(true)
-    }
-
-    const scrollToForm = () => {
-        document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth" })
-    }
 
     return (
         <section className="relative min-h-[90vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -151,32 +138,10 @@ export function Hero() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="flex flex-col sm:flex-row gap-4 pt-4"
+                            className="pt-2"
                         >
-                            <Button
-                                size="lg"
-                                onClick={() => openModal("player")}
-                                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-8 h-14 font-bold text-base shadow-[0_0_20px_rgba(var(--primary),0.2)]"
-                            >
-                                Entrar a la beta
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </Button>
-
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                onClick={() => openModal("court")}
-                                className="border-border bg-transparent text-foreground hover:bg-card rounded-xl h-14 px-8 text-base"
-                            >
-                                Sumar mi cancha
-                            </Button>
+                            <CountdownTimer />
                         </motion.div>
-
-                        <BetaJoinModal
-                            isOpen={isModalOpen}
-                            onOpenChange={setIsModalOpen}
-                            defaultRole={modalRole}
-                        />
 
                         {/* Trust Footer */}
                         <motion.div
