@@ -8,6 +8,7 @@ type OS = 'windows' | 'mac' | 'linux';
 
 interface OSDownloadInfo {
   url: string;
+  installerUrl?: string;
 }
 
 interface LatestVersion {
@@ -108,7 +109,7 @@ export default function DownloadButton() {
     linux: "Linux"
   };
 
-  const detectedOsUrl = downloads[detectedOs]?.url;
+  const detectedOsUrl = downloads[detectedOs]?.installerUrl || downloads[detectedOs]?.url;
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -136,16 +137,17 @@ export default function DownloadButton() {
         <span className="text-xs text-muted-foreground mr-2 w-full text-center sm:w-auto">También disponible para:</span>
 
         {/* Windows */}
+        {(() => { const winUrl = downloads.windows?.installerUrl || downloads.windows?.url; return (
         <Button
-          asChild={!!downloads.windows?.url}
-          disabled={!downloads.windows?.url}
+          asChild={!!winUrl}
+          disabled={!winUrl}
           variant="outline"
           size="sm"
           className="h-8 gap-1.5 text-xs bg-card/50"
-          onClick={() => downloads.windows?.url && trackDownload('windows')}
+          onClick={() => winUrl && trackDownload('windows')}
         >
-          {downloads.windows?.url ? (
-            <a href={downloads.windows.url}>
+          {winUrl ? (
+            <a href={winUrl}>
               <Monitor className="w-3.5 h-3.5" />
               Windows
             </a>
@@ -156,18 +158,20 @@ export default function DownloadButton() {
             </span>
           )}
         </Button>
+        ); })()}
 
         {/* macOS */}
+        {(() => { const macUrl = downloads.mac?.installerUrl || downloads.mac?.url; return (
         <Button
-          asChild={!!downloads.mac?.url}
-          disabled={!downloads.mac?.url}
+          asChild={!!macUrl}
+          disabled={!macUrl}
           variant="outline"
           size="sm"
           className="h-8 gap-1.5 text-xs bg-card/50"
-          onClick={() => downloads.mac?.url && trackDownload('mac')}
+          onClick={() => macUrl && trackDownload('mac')}
         >
-          {downloads.mac?.url ? (
-            <a href={downloads.mac.url}>
+          {macUrl ? (
+            <a href={macUrl}>
               <Apple className="w-3.5 h-3.5 mb-0.5" />
               macOS
             </a>
@@ -178,18 +182,20 @@ export default function DownloadButton() {
             </span>
           )}
         </Button>
+        ); })()}
 
         {/* Linux */}
+        {(() => { const linuxUrl = downloads.linux?.installerUrl || downloads.linux?.url; return (
         <Button
-          asChild={!!downloads.linux?.url}
-          disabled={!downloads.linux?.url}
+          asChild={!!linuxUrl}
+          disabled={!linuxUrl}
           variant="outline"
           size="sm"
           className="h-8 gap-1.5 text-xs bg-card/50"
-          onClick={() => downloads.linux?.url && trackDownload('linux')}
+          onClick={() => linuxUrl && trackDownload('linux')}
         >
-          {downloads.linux?.url ? (
-            <a href={downloads.linux.url}>
+          {linuxUrl ? (
+            <a href={linuxUrl}>
               <Terminal className="w-3.5 h-3.5" />
               Linux
             </a>
@@ -200,6 +206,7 @@ export default function DownloadButton() {
             </span>
           )}
         </Button>
+        ); })()}
       </div>
     </div>
   );
