@@ -1,20 +1,17 @@
 {
-  "version": "1.0.4",
+  "version": "1.0.5",
   "notes": "Mejoras y correcciones",
   "mandatory": false,
   "releaseDate": "2026-03-10",
   "downloads": {
     "mac": {
-      "url": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.4/Mi.Partido-1.0.4-mac.zip",
-      "installerUrl": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.4/Mi.Partido-1.0.4.dmg"
+      "url": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.5/Mi.Partido-1.0.5-mac.zip"
     },
     "windows": {
-      "url": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.4/Mi.Partido-1.0.4-windows.zip",
-      "installerUrl": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.4/Mi.Partido-1.0.4.msi"
+      "url": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.5/Mi.Partido-1.0.5-windows.zip"
     },
     "linux": {
-      "url": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.4/Mi.Partido-1.0.4-linux.zip",
-      "installerUrl": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.4/mi-partido_1.0.4-1_amd64.deb"
+      "url": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.5/Mi.Partido-1.0.5-linux.zip"
     }
   }
 }
