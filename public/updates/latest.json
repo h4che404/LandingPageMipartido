@@ -1,20 +1,20 @@
 {
-  "version": "1.0.19",
+  "version": "1.0.20",
   "notes": "Nueva versión disponible",
   "mandatory": false,
   "releaseDate": "2026-03-11",
   "downloads": {
     "windows": {
-      "url": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.19/Mi.Partido-1.0.19.msi",
-      "installerUrl": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.19/Mi.Partido-1.0.19.msi",
-      "sha256": "cc7c45d649cdf30ce557eeed8df73ca5874522a3e75fb2347ea58ea53eeaef9d",
-      "size": 149100238
+      "url": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.20/Mi.Partido-1.0.20.msi",
+      "installerUrl": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.20/Mi.Partido-1.0.20.msi",
+      "sha256": "6eb5f0bc9cf7ab77c8c4817593baba2451724ea016becdbaa88d312e251fc80d",
+      "size": 149104331
     },
     "mac": {
-      "url": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.19/Mi.Partido-1.0.19-mac.zip",
-      "installerUrl": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.19/Mi.Partido-1.0.19.dmg",
-      "sha256": "b9fc64c4525f6d8fb2e5fc1249897d05f678ee7a2e05840ca351737a1ead1396",
-      "size": 162367108
+      "url": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.20/Mi.Partido-1.0.20-mac.zip",
+      "installerUrl": "https://github.com/h4che404/LandingPageMipartido/releases/download/v1.0.20/Mi.Partido-1.0.20.dmg",
+      "sha256": "6a7296279578cb314a3e816234784da12241f430567e2c4f390c97068ef0e0bb",
+      "size": 162377113
     }
   }
 }
