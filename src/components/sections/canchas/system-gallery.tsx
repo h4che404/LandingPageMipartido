@@ -19,7 +19,7 @@ export function SystemGallery() {
     const activeImg = tabs.find(t => t.id === activeTab)?.img || tabs[0].img
 
     return (
-        <section className="py-24 bg-background border-b border-border">
+        <section id="galeria" className="py-24 bg-background border-b border-border">
             <div className="container mx-auto px-4 max-w-7xl">
                 
                 <div className="text-center max-w-2xl mx-auto mb-12">

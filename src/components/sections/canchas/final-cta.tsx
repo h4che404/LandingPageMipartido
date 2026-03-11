@@ -6,7 +6,7 @@ import { CheckCircle2 } from "lucide-react"
 
 export function FinalCTA() {
     return (
-        <section className="relative py-32 overflow-hidden bg-[var(--venue-bg)] text-white border-t border-white/10">
+        <section id="descargar" className="relative py-32 overflow-hidden bg-[var(--venue-bg)] text-white border-t border-white/10">
             {/* Ambient Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--venue-cta)]/10 blur-[150px] rounded-full pointer-events-none -z-10" />
             <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none -z-10" />

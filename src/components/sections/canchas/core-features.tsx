@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { CheckCircle2 } from "lucide-react"
+import { CheckCircle2, ArrowRight } from "lucide-react"
 
 const features = [
     {
@@ -47,17 +47,6 @@ const features = [
             { top: "80%", left: "-5%", text: "Cobro de señas" }
         ],
         reversed: true
-    },
-    {
-        title: "Reportes automatizados",
-        description: "Visualizá ocupación, ingresos y rendimiento por cancha de manera gráfica y simple.",
-        benefits: ["Detectá horarios pico", "Compará qué rinde más", "Tomá decisiones con datos"],
-        image: "/images/canchas/feature-reportes.png",
-        callouts: [
-            { top: "15%", right: "-5%", text: "Rendimiento mensual" },
-            { top: "55%", left: "-10%", text: "Ocupación por hora" }
-        ],
-        reversed: false
     }
 ]
 
@@ -87,6 +76,16 @@ export function CoreFeatures() {
                                     </div>
                                 ))}
                             </div>
+
+                            <button
+                                onClick={() => {
+                                    document.getElementById('galeria')?.scrollIntoView({ behavior: 'smooth' })
+                                }}
+                                className="mt-8 flex items-center gap-2 text-primary font-bold hover:text-primary/80 transition-colors group"
+                            >
+                                Ver en Galería
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </button>
                         </div>
 
                         {/* Image Block with Callouts */}
@@ -110,8 +109,8 @@ export function CoreFeatures() {
                                         target.nextElementSibling?.classList.remove('hidden');
                                     }}
                                 />
-                                <div className="hidden absolute inset-0 m-2 bg-muted rounded-xl border border-border flex items-center justify-center">
-                                    <span className="text-muted-foreground font-bold font-mono">
+                                <div className="hidden absolute inset-0 m-2 bg-[#111826] rounded-xl border border-[#263248] flex items-center justify-center">
+                                    <span className="text-white font-bold font-mono text-sm">
                                         Mockup: {feature.title}
                                     </span>
                                 </div>
@@ -124,10 +123,10 @@ export function CoreFeatures() {
                                         whileInView={{ opacity: 1, scale: 1 }}
                                         transition={{ delay: 0.3 + (cIdx * 0.2) }}
                                         viewport={{ once: true }}
-                                        className="absolute bg-background border border-primary/30 shadow-lg px-4 py-2 rounded-lg text-sm font-bold text-primary z-20 whitespace-nowrap lg:flex hidden items-center gap-2"
+                                        className="absolute bg-[#0B1121] border border-[#1d283a] shadow-[0_4_20px_rgba(0,0,0,0.5)] px-4 py-2.5 rounded-full text-sm font-bold text-blue-400 z-20 whitespace-nowrap lg:flex hidden items-center gap-2.5 transform hover:scale-105 transition-transform"
                                         style={{ top: callout.top, left: callout.left, right: callout.right }}
                                     >
-                                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                        <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
                                         {callout.text}
                                     </motion.div>
                                 ))}
