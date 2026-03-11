@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
-import { CourtsMap } from "@/components/features/courts-map"
+import { useState } from "react"
 import { MapPin, Trophy, ArrowRight } from "lucide-react"
 
 interface Court {
@@ -29,18 +28,9 @@ export function CourtsExplorerClient({ courts }: CourtsExplorerClientProps) {
     // For now we just pass the ID down
 
     return (
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
-            {/* Map Column */}
-            <div className="w-full h-[500px]">
-                <CourtsMap
-                    courts={courts}
-                    selectedCourtId={selectedCourtId}
-                    hoveredCourtId={hoveredCourtId}
-                />
-            </div>
-
+        <div className="max-w-4xl mx-auto">
             {/* List Column */}
-            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                 {courts.map((court) => (
                     <div
                         key={court.user_id}
