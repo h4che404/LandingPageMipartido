@@ -8,7 +8,7 @@ const features = [
         title: "Gestión del complejo",
         description: "Cargá el nombre, dirección, contacto, fotos y datos comerciales de tu complejo en un solo lugar.",
         benefits: ["Mostrás tu negocio de forma profesional", "Listo para recibir reservas"],
-        image: "/images/canchas/feature-complejo.png",
+        image: "/images/canchas/Complejo.png",
         callouts: [
             { top: "20%", left: "-5%", text: "Fotos que venden" },
             { top: "60%", right: "-5%", text: "Perfil listo en minutos" }
@@ -19,7 +19,7 @@ const features = [
         title: "Administración de canchas",
         description: "Creá tus canchas asignando deporte, superficie, iluminación y precios diferenciados.",
         benefits: ["Cada cancha queda bien presentada", "Se venden mejor y más rápido"],
-        image: "/images/canchas/feature-canchas.png",
+        image: "/images/canchas/Canchas.png",
         callouts: [
             { top: "30%", right: "-10%", text: "Precios por cancha" },
             { top: "70%", left: "-10%", text: "Fútbol 5, 7 o Pádel" }
@@ -30,7 +30,7 @@ const features = [
         title: "Reservas sin solapes",
         description: "Gestioná disponibilidad real por horario. El sistema evita automáticamente dobles reservas.",
         benefits: ["Menos conflictos y enojos", "Más orden en la recepción", "Mostrás solo horarios válidos"],
-        image: "/images/canchas/feature-reservas.png",
+        image: "/images/canchas/Reservas.png",
         callouts: [
             { top: "25%", left: "-10%", text: "Sin dobles reservas" },
             { top: "65%", right: "-5%", text: "Disponibilidad real" }
@@ -41,7 +41,7 @@ const features = [
         title: "Caja, ventas y stock",
         description: "Controlá cobros de señas, productos tipo kiosco, inventario y todos los movimientos diarios.",
         benefits: ["Orden financiero total", "Menos pérdidas de caja", "Control de deudores"],
-        image: "/images/canchas/feature-caja.png",
+        image: "/images/canchas/Caja.png",
         callouts: [
             { top: "40%", right: "-10%", text: "Caja controlada" },
             { top: "80%", left: "-5%", text: "Cobro de señas" }

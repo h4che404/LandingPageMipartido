@@ -40,7 +40,7 @@ export function MobileIntegration() {
                                 <MonitorPlay className="w-12 h-12 text-muted-foreground/30 mb-2" />
                             </div>
                             <img 
-                                src="/images/canchas/desktop-panel.png" 
+                                src="/images/canchas/Reservas.png" 
                                 alt="Administración Desktop" 
                                 className="w-full h-full object-cover relative z-10"
                                 onError={(e) => {

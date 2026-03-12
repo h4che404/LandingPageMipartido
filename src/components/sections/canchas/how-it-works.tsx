@@ -9,28 +9,28 @@ const steps = [
         icon: Building,
         title: "Cargás tu complejo",
         desc: "Configurás datos básicos, fotos y políticas de reserva.",
-        img: "/images/canchas/step-1.png"
+        img: "/images/canchas/Complejo.png"
     },
     {
         num: "02",
         icon: LayoutGrid,
         title: "Creás tus canchas",
         desc: "Definís deportes, precios, iluminación y reglas especiales.",
-        img: "/images/canchas/step-2.png"
+        img: "/images/canchas/Canchas.png"
     },
     {
         num: "03",
         icon: HandCoins,
         title: "Organizás tu operación",
         desc: "Administrás reservas, cobros, clientes y stock desde el equipo.",
-        img: "/images/canchas/step-3.png"
+        img: "/images/canchas/Reservas.png"
     },
     {
         num: "04",
         icon: Rocket,
         title: "Activás el complejo",
         desc: "Tus canchas se publican y quedan listas para recibir reservas.",
-        img: "/images/canchas/step-4.png"
+        img: "/images/canchas/Finanzas.png"
     }
 ]
 

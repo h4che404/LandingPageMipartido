@@ -6,10 +6,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRight, MonitorPlay, ChevronRight, ChevronLeft } from "lucide-react"
 
 const images = [
-    "/images/canchas/gallery-dashboard.png",
-    "/images/canchas/gallery-reservas.png",
-    "/images/canchas/gallery-canchas.png",
-    "/images/canchas/gallery-caja.png",
+    "/images/canchas/Complejo.png",
+    "/images/canchas/Reservas.png",
+    "/images/canchas/Canchas.png",
+    "/images/canchas/Caja.png",
 ]
 
 export function HeroCanchas() {

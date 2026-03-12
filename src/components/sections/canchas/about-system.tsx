@@ -39,7 +39,7 @@ export function AboutSystem() {
                             className="absolute top-0 right-0 w-3/4 rounded-xl border border-border/50 shadow-2xl overflow-hidden bg-card"
                         >
                             <img 
-                                src="/images/canchas/canchas-mockup.png" 
+                                src="/images/canchas/Canchas.png" 
                                 alt="Gestión de Canchas" 
                                 className="w-full h-auto object-cover opacity-60"
                                 onError={(e) => {
@@ -62,7 +62,7 @@ export function AboutSystem() {
                             className="absolute bottom-10 left-0 w-3/4 rounded-xl border border-border/50 shadow-2xl overflow-hidden bg-card z-10"
                         >
                             <img 
-                                src="/images/canchas/caja-mockup.png" 
+                                src="/images/canchas/Caja.png" 
                                 alt="Caja y Ventas" 
                                 className="w-full h-auto object-cover opacity-80"
                                 onError={(e) => {
@@ -91,7 +91,7 @@ export function AboutSystem() {
                                 <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
                             </div>
                             <img 
-                                src="/images/canchas/reservas-mockup.png" 
+                                src="/images/canchas/Reservas.png" 
                                 alt="Agenda de Reservas" 
                                 className="w-full h-auto object-cover"
                                 onError={(e) => {

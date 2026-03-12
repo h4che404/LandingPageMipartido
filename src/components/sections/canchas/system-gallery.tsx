@@ -6,11 +6,10 @@ import { CalendarDays, LayoutDashboard, LayoutGrid, Wallet, BarChart } from "luc
 import { cn } from "@/lib/utils"
 
 const tabs = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, img: "/images/canchas/gallery-dashboard.png" },
-    { id: "reservas", label: "Reservas", icon: CalendarDays, img: "/images/canchas/gallery-reservas.png" },
-    { id: "canchas", label: "Canchas", icon: LayoutGrid, img: "/images/canchas/gallery-canchas.png" },
-    { id: "caja", label: "Caja", icon: Wallet, img: "/images/canchas/gallery-caja.png" },
-    { id: "reportes", label: "Reportes", icon: BarChart, img: "/images/canchas/gallery-reportes.png" },
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, img: "/images/canchas/Complejo.png" },
+    { id: "reservas", label: "Reservas", icon: CalendarDays, img: "/images/canchas/Reservas.png" },
+    { id: "canchas", label: "Canchas", icon: LayoutGrid, img: "/images/canchas/Canchas.png" },
+    { id: "caja", label: "Caja", icon: Wallet, img: "/images/canchas/Caja.png" }
 ]
 
 export function SystemGallery() {
