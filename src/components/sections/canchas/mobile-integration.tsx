@@ -74,7 +74,7 @@ export function MobileIntegration() {
                         className="flex flex-col items-center gap-6"
                     >
                         {/* Phone Mockup Frame */}
-                        <div className="w-[180px] h-[360px] bg-black border-[6px] border-[#2a2a2a] rounded-[2.5rem] shadow-2xl overflow-hidden relative ring-1 ring-border/50">
+                        <div className="w-[180px] h-[390px] bg-black border-[6px] border-[#2a2a2a] rounded-[2.5rem] shadow-2xl overflow-hidden relative ring-1 ring-border/50">
                             {/* Notch */}
                             <div className="absolute top-0 inset-x-0 h-4 flex justify-center z-20">
                                 <div className="w-20 h-full bg-[#2a2a2a] rounded-b-xl" />
@@ -86,7 +86,7 @@ export function MobileIntegration() {
                             <img 
                                 src="/images/mobile/Screenshot_20260408_201953.png" 
                                 alt="App Jugadores" 
-                                className="w-full h-full object-cover relative z-10"
+                                className="w-full h-full object-contain relative z-10"
                                 onError={(e) => {
                                     const target = e.target as HTMLImageElement;
                                     target.style.display = 'none';

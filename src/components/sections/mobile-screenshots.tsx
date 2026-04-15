@@ -43,18 +43,20 @@ export function MobileScreenshots() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {screenshots.map((screenshot) => (
                         <div key={screenshot.src} className="mx-auto w-full max-w-[280px]">
-                            <figure className="rounded-[2.4rem] border-[8px] border-zinc-900 bg-zinc-950 shadow-2xl overflow-hidden">
-                                <div className="h-7 bg-black flex items-center justify-center">
-                                    <div className="w-20 h-4 rounded-b-xl bg-zinc-800" />
+                            <figure className="relative rounded-[2.4rem] border-[8px] border-zinc-900 bg-zinc-950 shadow-2xl overflow-hidden">
+                                <div className="absolute top-0 inset-x-0 h-5 flex justify-center z-20 pointer-events-none">
+                                    <div className="w-20 h-full bg-zinc-900 rounded-b-xl" />
                                 </div>
-                                <Image
-                                    src={screenshot.src}
-                                    alt={screenshot.alt}
-                                    width={1080}
-                                    height={2340}
-                                    className="w-full h-auto object-cover"
-                                    priority={false}
-                                />
+                                <div className="relative aspect-[1080/2340] bg-black">
+                                    <Image
+                                        src={screenshot.src}
+                                        alt={screenshot.alt}
+                                        fill
+                                        sizes="(max-width: 640px) 80vw, (max-width: 1024px) 40vw, 280px"
+                                        className="object-contain"
+                                        priority={false}
+                                    />
+                                </div>
                             </figure>
                             <figcaption className="mt-4 px-1 text-center">
                                 <p className="font-semibold text-foreground">{screenshot.title}</p>

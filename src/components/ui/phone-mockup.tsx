@@ -22,7 +22,7 @@ export function PhoneMockup() {
     }, [])
 
     return (
-        <div className="relative mx-auto border-gray-800 bg-black border-[8px] rounded-[2.5rem] h-[600px] w-[300px] shadow-2xl flex flex-col overflow-hidden">
+        <div className="relative mx-auto w-[300px] aspect-[1080/2340] border-gray-800 bg-black border-[8px] rounded-[2.5rem] shadow-2xl overflow-hidden">
             {/* Dynamic Island / Notch */}
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-b-xl z-20"></div>
 
@@ -34,7 +34,7 @@ export function PhoneMockup() {
                         alt={`Captura mobile ${index + 1}`}
                         fill
                         sizes="300px"
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${current === index ? "opacity-100" : "opacity-0"
+                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-700 ${current === index ? "opacity-100" : "opacity-0"
                             }`}
                     />
                 ))}
