@@ -84,7 +84,7 @@ export function MobileIntegration() {
                                 <Smartphone className="w-10 h-10 text-muted-foreground/30" />
                             </div>
                             <img 
-                                src="/images/canchas/mobile-app.png" 
+                                src="/images/mobile/Screenshot_20260408_201953.png" 
                                 alt="App Jugadores" 
                                 className="w-full h-full object-cover relative z-10"
                                 onError={(e) => {

@@ -4,11 +4,13 @@ import { Benefits } from "@/components/sections/benefits";
 import { PainPoints } from "@/components/sections/pain-points";
 import { PublicBetaList } from "@/components/features/public-beta-list";
 import { CourtsExplorer } from "@/components/sections/courts-explorer";
+import { MobileScreenshots } from "@/components/sections/mobile-screenshots";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Hero />
+      <MobileScreenshots />
       <ForCourts />
       <Benefits />
       <PainPoints />
@@ -17,6 +19,5 @@ export default function Home() {
     </div>
   );
 }
-
 
 
