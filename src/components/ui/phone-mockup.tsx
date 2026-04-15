@@ -26,7 +26,7 @@ export function PhoneMockup() {
             {/* Dynamic Island / Notch */}
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-b-xl z-20"></div>
 
-            <div className="relative flex-1 overflow-hidden bg-black">
+            <div className="relative h-full w-full overflow-hidden bg-black">
                 {screenshots.map((src, index) => (
                     <Image
                         key={src}
